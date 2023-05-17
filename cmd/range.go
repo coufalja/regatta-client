@@ -24,18 +24,20 @@ var Range = cobra.Command{
 	Example: "regatta-client range table",
 	Args:    cobra.MatchAll(cobra.MinimumNArgs(1), cobra.MaximumNArgs(2)),
 	Run: func(cmd *cobra.Command, args []string) {
-		timeout, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
+		connectTimeoutCtx, connectCancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer connectCancel()
 
-		client, err := createClient(timeout)
+		client, err := createClient(connectTimeoutCtx)
 		if err != nil {
-			fmt.Println("There was an error, while creating client", err)
+			fmt.Println("There was an error, while creating client.", err)
 			return
 		}
 
+		timeoutCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
 		req := createRangeRequest(args)
 
-		response, err := client.Range(timeout, req)
+		response, err := client.Range(timeoutCtx, req)
 		if err != nil && status.Code(err) == codes.NotFound {
 			fmt.Println("The requested resource was not found.", err)
 			return
