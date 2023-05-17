@@ -59,8 +59,16 @@ func createRangeRequest(args []string) *proto.RangeRequest {
 	if len(args) == 2 {
 		key := args[1]
 		if strings.HasSuffix(key, "*") {
-			// prefix search
 			key = strings.TrimSuffix(key, "*")
+			if len(key) == 0 {
+				// get all
+				return &proto.RangeRequest{
+					Table:    []byte(args[0]),
+					Key:      []byte{0},
+					RangeEnd: []byte{0},
+				}
+			}
+			// prefix search
 			return &proto.RangeRequest{
 				Table:    []byte(args[0]),
 				Key:      []byte(key),
