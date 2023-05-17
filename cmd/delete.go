@@ -48,11 +48,6 @@ var Delete = cobra.Command{
 	},
 }
 
-type deleteCommandResult struct {
-	Deleted int    `json:"deleted"`
-	Keys    string `json:"keys"`
-}
-
 func createDeleteRangeRequest(args []string) *proto.DeleteRangeRequest {
 	table := args[0]
 	key := args[1]
