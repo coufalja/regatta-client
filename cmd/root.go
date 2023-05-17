@@ -5,7 +5,7 @@ import (
 )
 
 var RootCmd = cobra.Command{
-	Use: "regatta",
+	Use: "regatta-client",
 }
 
 var endpointOption string
