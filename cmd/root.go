@@ -18,7 +18,7 @@ var binaryData bool
 func init() {
 	RootCmd.PersistentFlags().StringVar(&endpointOption, "endpoint", "localhost:8443", "regatta API endpoint")
 	RootCmd.PersistentFlags().BoolVar(&insecureOption, "insecure", false, "allow insecure connection")
-	RootCmd.PersistentFlags().BoolVar(&binaryData, "binary", false, "avoid decoding keys and values into UTF-8 strings, but rather encode them as BASE64 strings")
+	RootCmd.PersistentFlags().BoolVar(&binaryData, "binary", false, "avoid decoding keys and values into UTF-8 strings, but rather encode them as Base64 strings")
 }
 
 func Execute() {
