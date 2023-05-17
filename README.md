@@ -3,7 +3,7 @@ Unofficial CLI client for [Regatta store](https://github.com/jamf/regatta)
 
 ## Installation
 ```
-go install github.com/tantalor93/regatta-clien
+go install github.com/tantalor93/regatta-client
 ```
 
 ## Usage
