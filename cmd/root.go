@@ -25,5 +25,5 @@ func init() {
 }
 
 func Execute() {
-	RootCmd.Execute()
+	_ = RootCmd.Execute()
 }

@@ -56,7 +56,6 @@ var Range = cobra.Command{
 		}
 		marshal, _ := json.Marshal(results)
 		fmt.Println(string(marshal))
-		return
 	},
 }
 
