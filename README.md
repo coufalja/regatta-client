@@ -24,5 +24,5 @@ regatta-client --endpoint localhost:8443 --insecure range table key
 
 ### get all records with prefix in table
 ```
-regatta-client --endpoint localhost:8443 --insecure range dns-zones 'prefix*'
+regatta-client --endpoint localhost:8443 --insecure range table 'prefix*'
 ```
