@@ -56,6 +56,7 @@ var RangeAll = cobra.Command{
 }
 
 func createRangeRequest(args []string) *proto.RangeRequest {
+	table := args[0]
 	if len(args) == 2 {
 		key := args[1]
 		if strings.HasSuffix(key, "*") {
@@ -63,28 +64,28 @@ func createRangeRequest(args []string) *proto.RangeRequest {
 			if len(key) == 0 {
 				// get all
 				return &proto.RangeRequest{
-					Table:    []byte(args[0]),
+					Table:    []byte(table),
 					Key:      []byte{0},
 					RangeEnd: []byte{0},
 				}
 			}
 			// prefix search
 			return &proto.RangeRequest{
-				Table:    []byte(args[0]),
+				Table:    []byte(table),
 				Key:      []byte(key),
 				RangeEnd: []byte(findNextString(key)),
 			}
 		} else {
 			// get by ID
 			return &proto.RangeRequest{
-				Table: []byte(args[0]),
-				Key:   []byte(args[1]),
+				Table: []byte(table),
+				Key:   []byte(key),
 			}
 		}
 	}
 	// get all
 	return &proto.RangeRequest{
-		Table:    []byte(args[0]),
+		Table:    []byte(table),
 		Key:      []byte{0},
 		RangeEnd: []byte{0},
 	}
