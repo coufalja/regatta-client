@@ -10,8 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var RangeAll = cobra.Command{
-	Use:     "range-all <table>",
+var RangeOne = cobra.Command{
+	Use:     "range-one <table> <key>",
 	Example: "range-all example",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		timeout, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -24,9 +24,8 @@ var RangeAll = cobra.Command{
 		}
 
 		req := &proto.RangeRequest{
-			Table:    []byte(args[0]),
-			Key:      []byte{0},
-			RangeEnd: []byte{0},
+			Table: []byte(args[0]),
+			Key:   []byte(args[1]),
 		}
 		response, err := client.Range(timeout, req)
 		if err != nil {
@@ -45,5 +44,5 @@ var RangeAll = cobra.Command{
 }
 
 func init() {
-	RootCmd.AddCommand(&RangeAll)
+	RootCmd.AddCommand(&RangeOne)
 }
