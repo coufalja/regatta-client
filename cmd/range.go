@@ -20,9 +20,12 @@ var Range = cobra.Command{
 	Long: "Retrieves data from Regatta store using Range query as defined in API (https://engineering.jamf.com/regatta/api/#range).\n" +
 		"You can either retrieve all items from the Regatta by providing no key.\n" +
 		"Or you can query for a single item in Regatta by providing item's key.\n" +
-		"Or you can query for all items with given prefix, by providing the given prefix and adding the asterisk (*) to the prefix.",
-	Example: "regatta-client range table",
-	Args:    cobra.MatchAll(cobra.MinimumNArgs(1), cobra.MaximumNArgs(2)),
+		"Or you can query for all items with given prefix, by providing the given prefix and adding the asterisk (*) to the prefix.\n" +
+		"When key or prefix is provided, it needs to be valid UTF-8 string.",
+	Example: "regatta-client range table\n" +
+		"regatta-client range table key\n" +
+		"regatta-client range table 'prefix*'",
+	Args: cobra.MatchAll(cobra.MinimumNArgs(1), cobra.MaximumNArgs(2)),
 	Run: func(cmd *cobra.Command, args []string) {
 		connectTimeoutCtx, connectCancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer connectCancel()
@@ -47,14 +50,19 @@ var Range = cobra.Command{
 			return
 		}
 
-		var results = make([]result, 0)
+		var results = make([]rangeCommandResult, 0)
 		for _, kv := range response.Kvs {
-			results = append(results, result{Key: getValue(kv.Key), Value: getValue(kv.Value)})
+			results = append(results, rangeCommandResult{Key: getValue(kv.Key), Value: getValue(kv.Value)})
 		}
 		marshal, _ := json.Marshal(results)
 		fmt.Println(string(marshal))
 		return
 	},
+}
+
+type rangeCommandResult struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
 func createRangeRequest(args []string) *proto.RangeRequest {
@@ -98,8 +106,4 @@ func getValue(data []byte) string {
 		return base64.StdEncoding.EncodeToString(data)
 	}
 	return string(data)
-}
-
-func init() {
-	RootCmd.AddCommand(&Range)
 }

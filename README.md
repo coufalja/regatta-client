@@ -16,6 +16,7 @@ Usage:
 
 Available Commands:
   completion  Generate the autocompletion script for the specified shell
+  delete      Delete data from Regatta store
   help        Help about any command
   range       Retrieve data from Regatta store
 
@@ -27,7 +28,6 @@ Flags:
 
 Use "regatta-client [command] --help" for more information about a command.
 ```
-
 
 ## Examples
 ### get all records in table
@@ -48,4 +48,19 @@ regatta-client --endpoint localhost:8443 --insecure range table key
 ### get all records with prefix in table
 ```
 regatta-client --endpoint localhost:8443 --insecure range table 'prefix*'
+```
+
+### delete record by key in table
+```
+regatta-client --endpoint localhost:8443 --insecure delete table key
+```
+
+### delete all records with given prefix in table 
+```
+regatta-client --endpoint localhost:8443 --insecure delete table 'prefix*'
+```
+
+### delete all records in table
+```
+regatta-client --endpoint localhost:8443 --insecure delete table '*'
 ```

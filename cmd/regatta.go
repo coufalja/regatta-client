@@ -9,11 +9,6 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-type result struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
 func createClient(ctx context.Context) (proto.KVClient, error) {
 	connOpts := []grpc.DialOption{
 		grpc.WithBlock(),
