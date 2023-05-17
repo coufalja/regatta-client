@@ -61,7 +61,7 @@ var RangeAll = cobra.Command{
 			return
 		}
 
-		var results []result
+		var results = make([]result, 0)
 		for _, kv := range response.Kvs {
 			results = append(results, result{Key: getValue(kv.Key), Value: getValue(kv.Value)})
 		}
