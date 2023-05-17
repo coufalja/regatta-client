@@ -8,6 +8,9 @@ go install github.com/tantalor93/regatta-client
 
 ## Usage
 ```
+Command-line tool wrapping API calls to Regatta (https://engineering.jamf.com/regatta/).
+Simplifies querying for data in Regatta store and other operations.
+
 Usage:
   regatta-client [command]
 

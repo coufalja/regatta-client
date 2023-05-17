@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var RangeAll = cobra.Command{
+var Range = cobra.Command{
 	Use:   "range <table> [key]",
 	Short: "Retrieve data from Regatta store",
 	Long: "Retrieves data from Regatta store using Range query as defined in API (https://engineering.jamf.com/regatta/api/#range).\n" +
@@ -99,5 +99,5 @@ func getValue(data []byte) string {
 }
 
 func init() {
-	RootCmd.AddCommand(&RangeAll)
+	RootCmd.AddCommand(&Range)
 }
