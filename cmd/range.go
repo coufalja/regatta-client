@@ -15,7 +15,12 @@ import (
 )
 
 var RangeAll = cobra.Command{
-	Use:     "range <table> [key]",
+	Use:   "range <table> [key]",
+	Short: "Retrieve data from Regatta store",
+	Long: "Retrieves data from Regatta store using Range query as defined in API (https://engineering.jamf.com/regatta/api/#range).\n" +
+		"You can either retrieve all items from the Regatta by providing no key.\n" +
+		"Or you can query for a single item in Regatta by providing item's key.\n" +
+		"Or you can query for all items with given prefix, by providing the given prefix and adding the asterisk (*) to the prefix.",
 	Example: "regatta-client range table",
 	Args:    cobra.MatchAll(cobra.MinimumNArgs(1), cobra.MaximumNArgs(2)),
 	Run: func(cmd *cobra.Command, args []string) {
