@@ -16,40 +16,19 @@ import (
 
 var RangeAll = cobra.Command{
 	Use:     "range <table> [key]",
-	Example: "range example",
+	Example: "regatta-client range table",
+	Args:    cobra.MatchAll(cobra.MinimumNArgs(1), cobra.MaximumNArgs(2)),
 	Run: func(cmd *cobra.Command, args []string) {
 		timeout, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
 		client, err := createClient(timeout)
 		if err != nil {
-			fmt.Println("There was an error, while creating client")
+			fmt.Println("There was an error, while creating client", err)
 			return
 		}
 
-		var req *proto.RangeRequest
-		if len(args) == 2 {
-			key := args[1]
-			if strings.HasSuffix(key, "*") {
-				key = strings.TrimSuffix(key, "*")
-				req = &proto.RangeRequest{
-					Table:    []byte(args[0]),
-					Key:      []byte(key),
-					RangeEnd: []byte(findNextString(key)),
-				}
-			} else {
-				req = &proto.RangeRequest{
-					Table: []byte(args[0]),
-					Key:   []byte(args[1]),
-				}
-			}
-		} else {
-			req = &proto.RangeRequest{
-				Table:    []byte(args[0]),
-				Key:      []byte{0},
-				RangeEnd: []byte{0},
-			}
-		}
+		req := createRangeRequest(args)
 
 		response, err := client.Range(timeout, req)
 		if err != nil && status.Code(err) == codes.NotFound {
@@ -69,6 +48,30 @@ var RangeAll = cobra.Command{
 		fmt.Println(string(marshal))
 		return
 	},
+}
+
+func createRangeRequest(args []string) *proto.RangeRequest {
+	if len(args) == 2 {
+		key := args[1]
+		if strings.HasSuffix(key, "*") {
+			key = strings.TrimSuffix(key, "*")
+			return &proto.RangeRequest{
+				Table:    []byte(args[0]),
+				Key:      []byte(key),
+				RangeEnd: []byte(findNextString(key)),
+			}
+		} else {
+			return &proto.RangeRequest{
+				Table: []byte(args[0]),
+				Key:   []byte(args[1]),
+			}
+		}
+	}
+	return &proto.RangeRequest{
+		Table:    []byte(args[0]),
+		Key:      []byte{0},
+		RangeEnd: []byte{0},
+	}
 }
 
 func getValue(data []byte) string {
