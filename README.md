@@ -1,4 +1,5 @@
 # regatta-client
+Unofficial CLI client for [Regatta store](https://github.com/jamf/regatta) 
 
 ## Installation
 ```
