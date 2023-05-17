@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jamf/regatta/proto"
@@ -28,9 +29,19 @@ var RangeAll = cobra.Command{
 
 		var req *proto.RangeRequest
 		if len(args) == 2 {
-			req = &proto.RangeRequest{
-				Table: []byte(args[0]),
-				Key:   []byte(args[1]),
+			key := args[1]
+			if strings.HasSuffix(key, "*") {
+				key = strings.TrimSuffix(key, "*")
+				req = &proto.RangeRequest{
+					Table:    []byte(args[0]),
+					Key:      []byte(key),
+					RangeEnd: []byte(findNextString(key)),
+				}
+			} else {
+				req = &proto.RangeRequest{
+					Table: []byte(args[0]),
+					Key:   []byte(args[1]),
+				}
 			}
 		} else {
 			req = &proto.RangeRequest{
@@ -65,6 +76,24 @@ func getValue(data []byte) string {
 		return base64.StdEncoding.EncodeToString(data)
 	}
 	return string(data)
+}
+
+func findNextString(str string) string {
+	// Convert string to byte slice for mutation
+	bytes := []byte(str)
+
+	// Start from the last character and increment its byte value
+	i := len(bytes) - 1
+	for i >= 0 {
+		if bytes[i] < 255 {
+			bytes[i]++
+			break
+		}
+		bytes[i] = 0
+		i--
+	}
+
+	return string(bytes)
 }
 
 func init() {
