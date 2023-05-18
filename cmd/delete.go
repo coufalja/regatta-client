@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"strings"
 	"time"
 
@@ -23,7 +22,7 @@ var Delete = cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		client, err := createClient()
 		if err != nil {
-			fmt.Println("There was an error, while creating client.", err)
+			cmd.PrintErrln("There was an error, while creating client.", err)
 			return
 		}
 
@@ -33,7 +32,7 @@ var Delete = cobra.Command{
 
 		_, err = client.DeleteRange(timeoutCtx, req)
 		if err != nil {
-			handleRegattaError(err)
+			handleRegattaError(cmd, err)
 		}
 	},
 }

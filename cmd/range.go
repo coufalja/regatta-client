@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"strings"
 	"time"
 
@@ -33,7 +32,7 @@ var Range = cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		client, err := createClient()
 		if err != nil {
-			fmt.Println("There was an error, while creating client.", err)
+			cmd.PrintErrln("There was an error, while creating client.", err)
 			return
 		}
 
@@ -43,7 +42,7 @@ var Range = cobra.Command{
 
 		response, err := client.Range(timeoutCtx, req)
 		if err != nil {
-			handleRegattaError(err)
+			handleRegattaError(cmd, err)
 			return
 		}
 
@@ -52,7 +51,7 @@ var Range = cobra.Command{
 			results = append(results, rangeCommandResult{Key: getValue(kv.Key), Value: getValue(kv.Value)})
 		}
 		marshal, _ := json.Marshal(results)
-		fmt.Println(string(marshal))
+		cmd.Println(string(marshal))
 	},
 }
 

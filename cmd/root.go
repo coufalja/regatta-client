@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/spf13/cobra"
 )
 
@@ -24,6 +26,8 @@ func init() {
 	RootCmd.AddCommand(&Range)
 	RootCmd.AddCommand(&Delete)
 	RootCmd.AddCommand(&Put)
+
+	RootCmd.SetOut(os.Stdout)
 }
 
 func Execute() {

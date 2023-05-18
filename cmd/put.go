@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"encoding/base64"
-	"fmt"
 	"time"
 
 	"github.com/jamf/regatta/proto"
@@ -25,7 +24,7 @@ var Put = cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		client, err := createClient()
 		if err != nil {
-			fmt.Println("There was an error, while creating client.", err)
+			cmd.PrintErrln("There was an error, while creating client.", err)
 			return
 		}
 
@@ -34,13 +33,13 @@ var Put = cobra.Command{
 
 		req, err := createPutRequest(args)
 		if err != nil {
-			fmt.Println("There was an error while decoding parameters.", err)
+			cmd.PrintErrln("There was an error while decoding parameters.", err)
 			return
 		}
 
 		_, err = client.Put(timeoutCtx, req)
 		if err != nil {
-			handleRegattaError(err)
+			handleRegattaError(cmd, err)
 		}
 	},
 }
