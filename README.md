@@ -1,7 +1,15 @@
+[![Release](https://img.shields.io/github/release/Tantalor93/regatta-client/all.svg)](https://github.com/tantalor93/regatta-client/releases)
 # regatta-client
 Unofficial CLI client for [Regatta store](https://github.com/jamf/regatta) 
 
 ## Installation
+you can install `regatta-client` using [Homebrew](https://brew.sh/)
+```
+brew tap tantalor93/regatta-client
+brew install regatta-client
+```
+
+or using Go tooling 
 ```
 go install github.com/tantalor93/regatta-client
 ```
