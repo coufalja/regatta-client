@@ -13,6 +13,7 @@ import (
 
 func createClient() (proto.KVClient, error) {
 	connOpts := []grpc.DialOption{
+		// nolint:gosec
 		grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{InsecureSkipVerify: insecureOption})),
 	}
 

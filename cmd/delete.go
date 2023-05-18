@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Delete is a subcommand used for deleting records in a table.
 var Delete = cobra.Command{
 	Use:   "delete <table> <key>",
 	Short: "Delete data from Regatta store",
@@ -58,12 +59,11 @@ func createDeleteRangeRequest(args []string) *proto.DeleteRangeRequest {
 			RangeEnd: []byte(findNextString(key)),
 			PrevKv:   true,
 		}
-	} else {
-		// delete single
-		return &proto.DeleteRangeRequest{
-			Table:  []byte(table),
-			Key:    []byte(key),
-			PrevKv: true,
-		}
+	}
+	// delete single
+	return &proto.DeleteRangeRequest{
+		Table:  []byte(table),
+		Key:    []byte(key),
+		PrevKv: true,
 	}
 }

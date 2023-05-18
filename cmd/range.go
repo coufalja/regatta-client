@@ -17,6 +17,7 @@ func init() {
 	Range.Flags().BoolVar(&rangeBinary, "binary", false, "avoid decoding keys and values into UTF-8 strings, but rather encode them as Base64 strings")
 }
 
+// Range is a subcommand used for retrieving records from a table.
 var Range = cobra.Command{
 	Use:   "range <table> [key]",
 	Short: "Retrieve data from Regatta store",
@@ -46,7 +47,7 @@ var Range = cobra.Command{
 			return
 		}
 
-		var results = make([]rangeCommandResult, 0)
+		results := make([]rangeCommandResult, 0)
 		for _, kv := range response.Kvs {
 			results = append(results, rangeCommandResult{Key: getValue(kv.Key), Value: getValue(kv.Value)})
 		}
@@ -80,12 +81,11 @@ func createRangeRequest(args []string) *proto.RangeRequest {
 				Key:      []byte(key),
 				RangeEnd: []byte(findNextString(key)),
 			}
-		} else {
-			// get by ID
-			return &proto.RangeRequest{
-				Table: []byte(table),
-				Key:   []byte(key),
-			}
+		}
+		// get by ID
+		return &proto.RangeRequest{
+			Table: []byte(table),
+			Key:   []byte(key),
 		}
 	}
 	// get all

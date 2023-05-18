@@ -15,6 +15,7 @@ func init() {
 	Put.Flags().BoolVar(&putBinary, "binary", false, "provided <value> is binary data encoded using Base64")
 }
 
+// Put is a subcommand used for creating/updating records in a table.
 var Put = cobra.Command{
 	Use:     "put <table> <key> <value>",
 	Short:   "Put data into Regatta store",

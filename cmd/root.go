@@ -6,8 +6,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Version is set during release of project.
 var Version = "unknown"
 
+// RootCmd is a root command for all the subcommands of regatta-client.
 var RootCmd = cobra.Command{
 	Use:   "regatta-client",
 	Short: "Client for Regatta store",
@@ -16,8 +18,10 @@ var RootCmd = cobra.Command{
 	Version: Version,
 }
 
-var endpointOption string
-var insecureOption bool
+var (
+	endpointOption string
+	insecureOption bool
+)
 
 func init() {
 	RootCmd.PersistentFlags().StringVar(&endpointOption, "endpoint", "localhost:8443", "regatta API endpoint")
@@ -30,6 +34,7 @@ func init() {
 	RootCmd.SetOut(os.Stdout)
 }
 
+// Execute executes root command of regatta-client.
 func Execute() {
 	_ = RootCmd.Execute()
 }
