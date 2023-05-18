@@ -33,7 +33,7 @@ Use "regatta-client [command] --help" for more information about a command.
 ### get all records in table
 this example retrieves all records in `example-table` table
 ```
-regatta-client --endpoint localhost:8443 --insecure range table
+regatta-client --endpoint localhost:8443 --insecure range example-table
 ```
 
 ### get all records in table without decoding keys/values to UTF-8
