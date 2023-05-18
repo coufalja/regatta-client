@@ -1,5 +1,5 @@
 [![Release](https://img.shields.io/github/release/Tantalor93/regatta-client/all.svg)](https://github.com/tantalor93/regatta-client/releases)
-[![Tantalor93](https://circleci.com/gh/Tantalor93/regatta-client/tree/master.svg?style=svg)](https://circleci.com/gh/Tantalor93/regatta-client?branch=main)
+[![Tantalor93](https://circleci.com/gh/Tantalor93/regatta-client/tree/main.svg?style=svg)](https://circleci.com/gh/Tantalor93/regatta-client?branch=main)
 
 # regatta-client
 Unofficial CLI client for [Regatta store](https://github.com/jamf/regatta) 
