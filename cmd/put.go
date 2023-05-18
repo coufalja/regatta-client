@@ -23,10 +23,7 @@ var Put = cobra.Command{
 	Example: "regatta-client put table key value",
 	Args:    cobra.MatchAll(cobra.ExactArgs(3)),
 	Run: func(cmd *cobra.Command, args []string) {
-		connectTimeoutCtx, connectCancel := context.WithTimeout(context.Background(), 2*time.Second)
-		defer connectCancel()
-
-		client, err := createClient(connectTimeoutCtx)
+		client, err := createClient()
 		if err != nil {
 			fmt.Println("There was an error, while creating client.", err)
 			return
@@ -43,8 +40,7 @@ var Put = cobra.Command{
 
 		_, err = client.Put(timeoutCtx, req)
 		if err != nil {
-			fmt.Println("There was an error, while querying Regatta.", err)
-			return
+			handleQueryError(err)
 		}
 	},
 }

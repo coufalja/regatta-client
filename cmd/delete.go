@@ -8,8 +8,6 @@ import (
 
 	"github.com/jamf/regatta/proto"
 	"github.com/spf13/cobra"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 var Delete = cobra.Command{
@@ -23,10 +21,7 @@ var Delete = cobra.Command{
 		"regatta-client delete table 'prefix*'",
 	Args: cobra.MatchAll(cobra.ExactArgs(2)),
 	Run: func(cmd *cobra.Command, args []string) {
-		connectTimeoutCtx, connectCancel := context.WithTimeout(context.Background(), 2*time.Second)
-		defer connectCancel()
-
-		client, err := createClient(connectTimeoutCtx)
+		client, err := createClient()
 		if err != nil {
 			fmt.Println("There was an error, while creating client.", err)
 			return
@@ -37,13 +32,8 @@ var Delete = cobra.Command{
 		req := createDeleteRangeRequest(args)
 
 		_, err = client.DeleteRange(timeoutCtx, req)
-		if err != nil && status.Code(err) == codes.NotFound {
-			fmt.Println("The requested resource was not found.", err)
-			return
-		}
 		if err != nil {
-			fmt.Println("There was an error, while querying Regatta.", err)
-			return
+			handleQueryError(err)
 		}
 	},
 }
