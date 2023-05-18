@@ -4,11 +4,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var Version = "unknown"
+
 var RootCmd = cobra.Command{
 	Use:   "regatta-client",
 	Short: "Client for Regatta store",
 	Long: "Command-line tool wrapping API calls to Regatta (https://engineering.jamf.com/regatta/).\n" +
 		"Simplifies querying for data in Regatta store and other operations.",
+	Version: Version,
 }
 
 var endpointOption string

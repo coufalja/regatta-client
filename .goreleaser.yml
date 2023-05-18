@@ -1,0 +1,34 @@
+before:
+  hooks:
+  - go mod tidy
+  - go generate ./...
+builds:
+- env:
+  - CGO_ENABLED=0
+  goos:
+  - linux
+  - windows
+  - darwin
+  ldflags:
+  - -X 'github.com/tantalor93/regatta-client/cmd.Version={{.Version}}-{{ .Os }}-{{ .Arch }}'
+archives:
+- id: foo
+  name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+  replacements:
+    darwin: Darwin
+    linux: Linux
+    windows: Windows
+    386: i386
+    amd64: x86_64
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+changelog:
+  sort: asc
+brews:
+- tap:
+    owner: tantalor93
+    name: homebrew-regatta-client
+  folder: Formula
+  homepage: https://github.com/Tantalor93/regatta-client
