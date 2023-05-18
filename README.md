@@ -51,7 +51,7 @@ regatta-client --endpoint localhost:8443 --insecure range example-table
 ### get all records in table without decoding keys/values to UTF-8
 this example retrieves all records in `example-table` table without decoding binary data, data is shown as Base64 strings
 ```
-regatta-client --endpoint localhost:8443 --insecure --binary range example-table
+regatta-client --endpoint localhost:8443 --binary --insecure range example-table
 ```
 
 ### get record by key in table
