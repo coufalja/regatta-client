@@ -25,6 +25,7 @@ Flags:
       --endpoint string   regatta API endpoint (default "localhost:8443")
   -h, --help              help for regatta-client
       --insecure          allow insecure connection
+  -v, --version           version for regatta-client
 
 Use "regatta-client [command] --help" for more information about a command.
 ```
