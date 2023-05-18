@@ -18,6 +18,7 @@ Available Commands:
   completion  Generate the autocompletion script for the specified shell
   delete      Delete data from Regatta store
   help        Help about any command
+  put         Put data into Regatta store
   range       Retrieve data from Regatta store
 
 Flags:
@@ -30,36 +31,57 @@ Use "regatta-client [command] --help" for more information about a command.
 
 ## Examples
 ### get all records in table
+this example retrieves all records in `example-table` table
 ```
 regatta-client --endpoint localhost:8443 --insecure range table
 ```
 
 ### get all records in table without decoding keys/values to UTF-8
+this example retrieves all records in `example-table` table without decoding binary data, data is shown as Base64 strings
 ```
-regatta-client --endpoint localhost:8443 --insecure --binary range table
+regatta-client --endpoint localhost:8443 --insecure --binary range example-table
 ```
 
 ### get record by key in table
+this example retrieves record with key `example-key` in `example-table` table
 ```
-regatta-client --endpoint localhost:8443 --insecure range table key
+regatta-client --endpoint localhost:8443 --insecure range example-table example-key
 ```
 
 ### get all records with prefix in table
+this example retrieves all records with keys prefixed with `example` in `example-table` table
 ```
-regatta-client --endpoint localhost:8443 --insecure range table 'prefix*'
+regatta-client --endpoint localhost:8443 --insecure range example-table 'example*'
 ```
 
 ### delete record by key in table
+this example deletes record with key `example-key` in `example-table` table
 ```
-regatta-client --endpoint localhost:8443 --insecure delete table key
+regatta-client --endpoint localhost:8443 --insecure delete example-table example-key
 ```
 
 ### delete all records with given prefix in table 
+this example deletes all records with keys prefixed with `example` in `example-table` table
 ```
-regatta-client --endpoint localhost:8443 --insecure delete table 'prefix*'
+regatta-client --endpoint localhost:8443 --insecure delete example-table 'example*'
 ```
 
 ### delete all records in table
+this example deletes all records in `example-table` table 
 ```
-regatta-client --endpoint localhost:8443 --insecure delete table '*'
+regatta-client --endpoint localhost:8443 --insecure delete example-table '*'
+```
+
+### put data into the table
+this example inserts (or updates existing record with same key) into table `example-table` a record with key `example-key` and value `example-value`
+```
+regatta-client --insecure --endpoint localhost:8443 put example-table example-key example-value
+```
+
+### put binary data into table
+to put binary data into Regatta using this tool, you need to encode the value using Base64 and use `--binary` flag, 
+for example this inserts into table `example-table` a record with key `example-key` and value `example-value`, where the value was
+provided encoded as Base64 string
+```
+regatta-client --binary --insecure --endpoint localhost:8443 put table key ZXhhbXBsZS12YWx1ZQ==
 ```

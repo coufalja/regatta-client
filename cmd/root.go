@@ -20,6 +20,7 @@ func init() {
 
 	RootCmd.AddCommand(&Range)
 	RootCmd.AddCommand(&Delete)
+	RootCmd.AddCommand(&Put)
 }
 
 func Execute() {
