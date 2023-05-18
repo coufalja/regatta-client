@@ -24,7 +24,7 @@ func createClient() (proto.KVClient, error) {
 	return proto.NewKVClient(conn), nil
 }
 
-func handleQueryError(err error) {
+func handleRegattaError(err error) {
 	if st := status.Convert(err); st != nil {
 		switch st.Code() {
 		case codes.NotFound:

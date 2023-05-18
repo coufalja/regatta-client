@@ -43,7 +43,7 @@ var Range = cobra.Command{
 
 		response, err := client.Range(timeoutCtx, req)
 		if err != nil {
-			handleQueryError(err)
+			handleRegattaError(err)
 			return
 		}
 

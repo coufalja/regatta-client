@@ -40,7 +40,7 @@ var Put = cobra.Command{
 
 		_, err = client.Put(timeoutCtx, req)
 		if err != nil {
-			handleQueryError(err)
+			handleRegattaError(err)
 		}
 	},
 }

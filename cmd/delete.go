@@ -33,7 +33,7 @@ var Delete = cobra.Command{
 
 		_, err = client.DeleteRange(timeoutCtx, req)
 		if err != nil {
-			handleQueryError(err)
+			handleRegattaError(err)
 		}
 	},
 }
