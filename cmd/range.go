@@ -14,6 +14,12 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+var rangeBinary bool
+
+func init() {
+	Range.Flags().BoolVar(&rangeBinary, "binary", false, "avoid decoding keys and values into UTF-8 strings, but rather encode them as Base64 strings")
+}
+
 var Range = cobra.Command{
 	Use:   "range <table> [key]",
 	Short: "Retrieve data from Regatta store",
@@ -101,7 +107,7 @@ func createRangeRequest(args []string) *proto.RangeRequest {
 }
 
 func getValue(data []byte) string {
-	if binaryData {
+	if rangeBinary {
 		return base64.StdEncoding.EncodeToString(data)
 	}
 	return string(data)

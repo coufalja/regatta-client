@@ -21,7 +21,6 @@ Available Commands:
   range       Retrieve data from Regatta store
 
 Flags:
-      --binary            avoid decoding keys and values into UTF-8 strings, but rather encode them as Base64 strings
       --endpoint string   regatta API endpoint (default "localhost:8443")
   -h, --help              help for regatta-client
       --insecure          allow insecure connection
