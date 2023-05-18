@@ -95,5 +95,5 @@ to put binary data into Regatta using this tool, you need to encode the value us
 for example this inserts into table `example-table` a record with key `example-key` and value `example-value`, where the value was
 provided encoded as Base64 string
 ```
-regatta-client --binary --insecure --endpoint localhost:8443 put table key ZXhhbXBsZS12YWx1ZQ==
+regatta-client --binary --insecure --endpoint localhost:8443 put example-table example-key ZXhhbXBsZS12YWx1ZQ==
 ```
