@@ -1,6 +1,7 @@
 [![Release](https://img.shields.io/github/release/Tantalor93/regatta-client/all.svg)](https://github.com/tantalor93/regatta-client/releases)
 [![Tantalor93](https://circleci.com/gh/Tantalor93/regatta-client/tree/main.svg?style=svg)](https://circleci.com/gh/Tantalor93/regatta-client?branch=main)
 [![lint](https://github.com/Tantalor93/regatta-client/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/Tantalor93/regatta-client/actions/workflows/lint.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 # regatta-client
 Unofficial CLI client for [Regatta store](https://github.com/jamf/regatta) 
