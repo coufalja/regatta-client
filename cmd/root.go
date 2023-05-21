@@ -21,11 +21,13 @@ var RootCmd = cobra.Command{
 var (
 	endpointOption string
 	insecureOption bool
+	certOption     string
 )
 
 func init() {
 	RootCmd.PersistentFlags().StringVar(&endpointOption, "endpoint", "localhost:8443", "regatta API endpoint")
-	RootCmd.PersistentFlags().BoolVar(&insecureOption, "insecure", false, "allow insecure connection")
+	RootCmd.PersistentFlags().BoolVar(&insecureOption, "insecure", false, "allow insecure connection, controls whether certificates are validated")
+	RootCmd.PersistentFlags().StringVar(&certOption, "cert", "", "regatta CA cert")
 
 	RootCmd.AddCommand(&Range)
 	RootCmd.AddCommand(&Delete)

@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"crypto/tls"
+	"crypto/x509"
+	"os"
 
 	"github.com/jamf/regatta/proto"
 	"github.com/spf13/cobra"
@@ -12,9 +14,21 @@ import (
 )
 
 func createClient() (proto.KVClient, error) {
+	pool, err := x509.SystemCertPool()
+	if err != nil {
+		return nil, err
+	}
+	if len(certOption) != 0 {
+		certs, err := os.ReadFile(certOption)
+		if err != nil {
+			return nil, err
+		}
+		pool.AppendCertsFromPEM(certs)
+	}
+
 	connOpts := []grpc.DialOption{
 		// nolint:gosec
-		grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{InsecureSkipVerify: insecureOption})),
+		grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{RootCAs: pool, InsecureSkipVerify: insecureOption})),
 	}
 
 	conn, err := grpc.Dial(endpointOption, connOpts...)

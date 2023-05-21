@@ -28,7 +28,7 @@ func Test_Put(t *testing.T) {
 	buf := new(bytes.Buffer)
 	RootCmd.SetOut(buf)
 	RootCmd.PersistentFlags().Set("endpoint", lis.Addr().String())
-	RootCmd.PersistentFlags().Set("insecure", "true")
+	RootCmd.PersistentFlags().Set("cert", "test.crt")
 	RootCmd.SetArgs([]string{"put", "table", "key", "data"})
 	RootCmd.Execute()
 
