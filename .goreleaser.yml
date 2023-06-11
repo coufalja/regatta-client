@@ -39,5 +39,5 @@ brews:
   homepage: https://github.com/Tantalor93/regatta-client
   install: |-
     bin.install "regatta-client"
-    bash_completion.install "completions/regatta-client.bash" => "regatta-client"
-    zsh_completion.install "completions/regatta-client.zsh" => "regatta-client"
+    bash_completion.install "completions/regatta-client.bash" => "_regatta-client"
+    zsh_completion.install "completions/regatta-client.zsh" => "_regatta-client"
