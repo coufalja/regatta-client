@@ -2,6 +2,7 @@ before:
   hooks:
   - go mod tidy
   - go generate ./...
+  - sh scripts/completions.sh
 builds:
 - env:
   - CGO_ENABLED=0
@@ -12,7 +13,7 @@ builds:
   ldflags:
   - -X 'github.com/tantalor93/regatta-client/cmd.Version={{.Version}}-{{ .Os }}-{{ .Arch }}'
 archives:
-- id: foo
+- id: regatta-client
   name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
   replacements:
     darwin: Darwin
@@ -20,6 +21,10 @@ archives:
     windows: Windows
     386: i386
     amd64: x86_64
+  files:
+  - LICENSE
+  - README.md
+  - completions/*
 checksum:
   name_template: 'checksums.txt'
 snapshot:
@@ -32,3 +37,7 @@ brews:
     name: homebrew-regatta-client
   folder: Formula
   homepage: https://github.com/Tantalor93/regatta-client
+  install: |-
+    bin.install "regatta-client"
+    bash_completion.install "completions/regatta-client.bash" => "regatta-client"
+    zsh_completion.install "completions/regatta-client.zsh" => "regatta-client"
