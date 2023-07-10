@@ -32,6 +32,7 @@ func init() {
 	RootCmd.AddCommand(&Range)
 	RootCmd.AddCommand(&Delete)
 	RootCmd.AddCommand(&Put)
+	RootCmd.AddCommand(&Man)
 
 	RootCmd.SetOut(os.Stdout)
 }

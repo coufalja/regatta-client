@@ -3,6 +3,7 @@ before:
   - go mod tidy
   - go generate ./...
   - sh scripts/completions.sh
+  - sh scripts/manpages.sh
 builds:
 - env:
   - CGO_ENABLED=0
@@ -25,6 +26,7 @@ archives:
   - LICENSE
   - README.md
   - completions/*
+  - manpages/*
 checksum:
   name_template: 'checksums.txt'
 snapshot:
@@ -41,3 +43,4 @@ brews:
     bin.install "regatta-client"
     bash_completion.install "completions/regatta-client.bash" => "_regatta-client"
     zsh_completion.install "completions/regatta-client.zsh" => "_regatta-client"
+    man1.install Dir["manpages/*.1"]
