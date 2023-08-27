@@ -14,6 +14,8 @@ import (
 )
 
 func Test_Put(t *testing.T) {
+	resetPutFlags()
+
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
 	s := grpc.NewServer(grpc.Creds(credentials.NewTLS(generateTLSConfig())))
@@ -27,10 +29,12 @@ func Test_Put(t *testing.T) {
 
 	buf := new(bytes.Buffer)
 	RootCmd.SetOut(buf)
-	RootCmd.PersistentFlags().Set("endpoint", lis.Addr().String())
-	RootCmd.PersistentFlags().Set("cert", "test.crt")
-	RootCmd.SetArgs([]string{"put", "table", "key", "data"})
+	RootCmd.SetArgs([]string{"--endpoint", lis.Addr().String(), "--cert", "test.crt", "put", "table", "key", "data"})
 	RootCmd.Execute()
 
 	storage.AssertExpectations(t)
+}
+
+func resetPutFlags() {
+	putBinary = false
 }
