@@ -27,9 +27,7 @@ func Test_Delete(t *testing.T) {
 
 	buf := new(bytes.Buffer)
 	RootCmd.SetOut(buf)
-	RootCmd.PersistentFlags().Set("endpoint", lis.Addr().String())
-	RootCmd.PersistentFlags().Set("cert", "test.crt")
-	RootCmd.SetArgs([]string{"delete", "table", "key"})
+	RootCmd.SetArgs([]string{"--endpoint", lis.Addr().String(), "--cert", "test.crt", "delete", "table", "key"})
 	RootCmd.Execute()
 
 	storage.AssertExpectations(t)

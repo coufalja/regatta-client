@@ -11,10 +11,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var rangeBinary bool
+var (
+	rangeBinary bool
+	rangeLimit  int64
+	zero        = []byte{0}
+)
 
 func init() {
 	Range.Flags().BoolVar(&rangeBinary, "binary", false, "avoid decoding keys and values into UTF-8 strings, but rather encode them as Base64 strings")
+	Range.Flags().Int64Var(&rangeLimit, "limit", 0, "limit number of returned items")
 }
 
 // Range is a subcommand used for retrieving records from a table.
@@ -71,8 +76,9 @@ func createRangeRequest(args []string) *proto.RangeRequest {
 				// get all
 				return &proto.RangeRequest{
 					Table:    []byte(table),
-					Key:      []byte{0},
-					RangeEnd: []byte{0},
+					Key:      zero,
+					RangeEnd: zero,
+					Limit:    rangeLimit,
 				}
 			}
 			// prefix search
@@ -80,19 +86,22 @@ func createRangeRequest(args []string) *proto.RangeRequest {
 				Table:    []byte(table),
 				Key:      []byte(key),
 				RangeEnd: []byte(findNextString(key)),
+				Limit:    rangeLimit,
 			}
 		}
 		// get by ID
 		return &proto.RangeRequest{
 			Table: []byte(table),
 			Key:   []byte(key),
+			Limit: rangeLimit,
 		}
 	}
 	// get all
 	return &proto.RangeRequest{
 		Table:    []byte(table),
-		Key:      []byte{0},
-		RangeEnd: []byte{0},
+		Key:      zero,
+		RangeEnd: zero,
+		Limit:    rangeLimit,
 	}
 }
 
