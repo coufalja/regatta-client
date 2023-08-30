@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/jamf/regatta/proto"
+	"github.com/jamf/regatta/regattapb"
 	"github.com/jamf/regatta/regattaserver"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -17,16 +17,16 @@ import (
 
 func Test_Range_All(t *testing.T) {
 	resetRangeFlags()
-	
+
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
 	s := grpc.NewServer(grpc.Creds(credentials.NewTLS(generateTLSConfig())))
 
 	storage := new(mockKVService)
-	storage.On("Range", mock.Anything, &proto.RangeRequest{Table: []byte("table"), Key: zero, RangeEnd: zero, Limit: 1}).
-		Return(&proto.RangeResponse{Kvs: []*proto.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
+	storage.On("Range", mock.Anything, &regattapb.RangeRequest{Table: []byte("table"), Key: zero, RangeEnd: zero, Limit: 1}).
+		Return(&regattapb.RangeResponse{Kvs: []*regattapb.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
 
-	proto.RegisterKVServer(s, &regattaserver.KVServer{Storage: storage})
+	regattapb.RegisterKVServer(s, &regattaserver.KVServer{Storage: storage})
 	go s.Serve(lis)
 	defer s.Stop()
 
@@ -46,10 +46,10 @@ func Test_Range_All_Star(t *testing.T) {
 	s := grpc.NewServer(grpc.Creds(credentials.NewTLS(generateTLSConfig())))
 
 	storage := new(mockKVService)
-	storage.On("Range", mock.Anything, &proto.RangeRequest{Table: []byte("table"), Key: zero, RangeEnd: zero, Limit: 1}).
-		Return(&proto.RangeResponse{Kvs: []*proto.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
+	storage.On("Range", mock.Anything, &regattapb.RangeRequest{Table: []byte("table"), Key: zero, RangeEnd: zero, Limit: 1}).
+		Return(&regattapb.RangeResponse{Kvs: []*regattapb.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
 
-	proto.RegisterKVServer(s, &regattaserver.KVServer{Storage: storage})
+	regattapb.RegisterKVServer(s, &regattaserver.KVServer{Storage: storage})
 	go s.Serve(lis)
 	defer s.Stop()
 
@@ -69,10 +69,10 @@ func Test_Range_Single(t *testing.T) {
 	s := grpc.NewServer(grpc.Creds(credentials.NewTLS(generateTLSConfig())))
 
 	storage := new(mockKVService)
-	storage.On("Range", mock.Anything, &proto.RangeRequest{Table: []byte("table"), Key: []byte("test-key")}).
-		Return(&proto.RangeResponse{Kvs: []*proto.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
+	storage.On("Range", mock.Anything, &regattapb.RangeRequest{Table: []byte("table"), Key: []byte("test-key")}).
+		Return(&regattapb.RangeResponse{Kvs: []*regattapb.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
 
-	proto.RegisterKVServer(s, &regattaserver.KVServer{Storage: storage})
+	regattapb.RegisterKVServer(s, &regattaserver.KVServer{Storage: storage})
 	go s.Serve(lis)
 	defer s.Stop()
 
@@ -92,10 +92,10 @@ func Test_Range_Prefix(t *testing.T) {
 	s := grpc.NewServer(grpc.Creds(credentials.NewTLS(generateTLSConfig())))
 
 	storage := new(mockKVService)
-	storage.On("Range", mock.Anything, &proto.RangeRequest{Table: []byte("table"), Key: []byte("test-key"), RangeEnd: []byte("test-kez")}).
-		Return(&proto.RangeResponse{Kvs: []*proto.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
+	storage.On("Range", mock.Anything, &regattapb.RangeRequest{Table: []byte("table"), Key: []byte("test-key"), RangeEnd: []byte("test-kez")}).
+		Return(&regattapb.RangeResponse{Kvs: []*regattapb.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
 
-	proto.RegisterKVServer(s, &regattaserver.KVServer{Storage: storage})
+	regattapb.RegisterKVServer(s, &regattaserver.KVServer{Storage: storage})
 	go s.Serve(lis)
 	defer s.Stop()
 

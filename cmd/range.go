@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jamf/regatta/proto"
+	"github.com/jamf/regatta/regattapb"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 )
@@ -74,7 +74,7 @@ type rangeCommandResult struct {
 	Value string `json:"value"`
 }
 
-func createRangeRequest(args []string) *proto.RangeRequest {
+func createRangeRequest(args []string) *regattapb.RangeRequest {
 	table := args[0]
 	if len(args) == 2 {
 		key := args[1]
@@ -82,7 +82,7 @@ func createRangeRequest(args []string) *proto.RangeRequest {
 			key = strings.TrimSuffix(key, "*")
 			if len(key) == 0 {
 				// get all
-				return &proto.RangeRequest{
+				return &regattapb.RangeRequest{
 					Table:    []byte(table),
 					Key:      zero,
 					RangeEnd: zero,
@@ -90,7 +90,7 @@ func createRangeRequest(args []string) *proto.RangeRequest {
 				}
 			}
 			// prefix search
-			return &proto.RangeRequest{
+			return &regattapb.RangeRequest{
 				Table:    []byte(table),
 				Key:      []byte(key),
 				RangeEnd: []byte(findNextString(key)),
@@ -98,14 +98,14 @@ func createRangeRequest(args []string) *proto.RangeRequest {
 			}
 		}
 		// get by ID
-		return &proto.RangeRequest{
+		return &regattapb.RangeRequest{
 			Table: []byte(table),
 			Key:   []byte(key),
 			Limit: rangeLimit,
 		}
 	}
 	// get all
-	return &proto.RangeRequest{
+	return &regattapb.RangeRequest{
 		Table:    []byte(table),
 		Key:      zero,
 		RangeEnd: zero,

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jamf/regatta/proto"
+	"github.com/jamf/regatta/regattapb"
 	"github.com/spf13/cobra"
 )
 
@@ -38,14 +38,14 @@ var Delete = cobra.Command{
 	},
 }
 
-func createDeleteRangeRequest(args []string) *proto.DeleteRangeRequest {
+func createDeleteRangeRequest(args []string) *regattapb.DeleteRangeRequest {
 	table := args[0]
 	key := args[1]
 	if strings.HasSuffix(key, "*") {
 		key = strings.TrimSuffix(key, "*")
 		if len(key) == 0 {
 			// delete all
-			return &proto.DeleteRangeRequest{
+			return &regattapb.DeleteRangeRequest{
 				Table:    []byte(table),
 				Key:      []byte{0},
 				RangeEnd: []byte{0},
@@ -53,7 +53,7 @@ func createDeleteRangeRequest(args []string) *proto.DeleteRangeRequest {
 			}
 		}
 		// delete by prefix
-		return &proto.DeleteRangeRequest{
+		return &regattapb.DeleteRangeRequest{
 			Table:    []byte(table),
 			Key:      []byte(key),
 			RangeEnd: []byte(findNextString(key)),
@@ -61,7 +61,7 @@ func createDeleteRangeRequest(args []string) *proto.DeleteRangeRequest {
 		}
 	}
 	// delete single
-	return &proto.DeleteRangeRequest{
+	return &regattapb.DeleteRangeRequest{
 		Table:  []byte(table),
 		Key:    []byte(key),
 		PrevKv: true,

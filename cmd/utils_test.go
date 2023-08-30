@@ -6,7 +6,7 @@ import (
 	"crypto/x509"
 	"os"
 
-	"github.com/jamf/regatta/proto"
+	"github.com/jamf/regatta/regattapb"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -38,22 +38,22 @@ type mockKVService struct {
 	mock.Mock
 }
 
-func (m *mockKVService) Range(ctx context.Context, req *proto.RangeRequest) (*proto.RangeResponse, error) {
+func (m *mockKVService) Range(ctx context.Context, req *regattapb.RangeRequest) (*regattapb.RangeResponse, error) {
 	called := m.Called(ctx, req)
-	return called.Get(0).(*proto.RangeResponse), called.Error(1)
+	return called.Get(0).(*regattapb.RangeResponse), called.Error(1)
 }
 
-func (m *mockKVService) Put(ctx context.Context, req *proto.PutRequest) (*proto.PutResponse, error) {
+func (m *mockKVService) Put(ctx context.Context, req *regattapb.PutRequest) (*regattapb.PutResponse, error) {
 	called := m.Called(ctx, req)
-	return called.Get(0).(*proto.PutResponse), called.Error(1)
+	return called.Get(0).(*regattapb.PutResponse), called.Error(1)
 }
 
-func (m *mockKVService) Delete(ctx context.Context, req *proto.DeleteRangeRequest) (*proto.DeleteRangeResponse, error) {
+func (m *mockKVService) Delete(ctx context.Context, req *regattapb.DeleteRangeRequest) (*regattapb.DeleteRangeResponse, error) {
 	called := m.Called(ctx, req)
-	return called.Get(0).(*proto.DeleteRangeResponse), called.Error(1)
+	return called.Get(0).(*regattapb.DeleteRangeResponse), called.Error(1)
 }
 
-func (m *mockKVService) Txn(ctx context.Context, req *proto.TxnRequest) (*proto.TxnResponse, error) {
+func (m *mockKVService) Txn(ctx context.Context, req *regattapb.TxnRequest) (*regattapb.TxnResponse, error) {
 	called := m.Called(ctx, req)
-	return called.Get(0).(*proto.TxnResponse), called.Error(1)
+	return called.Get(0).(*regattapb.TxnResponse), called.Error(1)
 }

@@ -5,7 +5,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/jamf/regatta/proto"
+	"github.com/jamf/regatta/regattapb"
 	"github.com/jamf/regatta/regattaserver"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -21,9 +21,9 @@ func Test_Put(t *testing.T) {
 	s := grpc.NewServer(grpc.Creds(credentials.NewTLS(generateTLSConfig())))
 
 	storage := new(mockKVService)
-	storage.On("Put", mock.Anything, mock.Anything).Return(&proto.PutResponse{}, nil)
+	storage.On("Put", mock.Anything, mock.Anything).Return(&regattapb.PutResponse{}, nil)
 
-	proto.RegisterKVServer(s, &regattaserver.KVServer{Storage: storage})
+	regattapb.RegisterKVServer(s, &regattaserver.KVServer{Storage: storage})
 	go s.Serve(lis)
 	defer s.Stop()
 
