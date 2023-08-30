@@ -43,7 +43,7 @@ var Range = cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		client, err := createClient()
 		if err != nil {
-			cmd.PrintErrln("There was an error, while creating client.", err)
+			cmd.PrintErrln("There was an error, while establishing connection to Regatta.", err)
 			return
 		}
 
