@@ -9,17 +9,22 @@ import (
 
 	"github.com/jamf/regatta/proto"
 	"github.com/spf13/cobra"
+	"google.golang.org/grpc"
 )
 
 var (
-	rangeBinary bool
-	rangeLimit  int64
-	zero        = []byte{0}
+	rangeBinary   bool
+	rangeLimit    int64
+	rangeCompress = gzipCompress
+
+	zero = []byte{0}
 )
 
 func init() {
 	Range.Flags().BoolVar(&rangeBinary, "binary", false, "avoid decoding keys and values into UTF-8 strings, but rather encode them as Base64 strings")
 	Range.Flags().Int64Var(&rangeLimit, "limit", 0, "limit number of returned items")
+	Range.Flags().Var(&rangeCompress, "compress", `use compression, allowed values: "gzip", "snappy" and "none"`)
+	Range.RegisterFlagCompletionFunc("compress", compressTypeCompletion)
 }
 
 // Range is a subcommand used for retrieving records from a table.
@@ -45,8 +50,11 @@ var Range = cobra.Command{
 		timeoutCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		req := createRangeRequest(args)
-
-		response, err := client.Range(timeoutCtx, req)
+		var callOpts []grpc.CallOption
+		if rangeCompress != noCompress {
+			callOpts = append(callOpts, grpc.UseCompressor(rangeCompress.String()))
+		}
+		response, err := client.Range(timeoutCtx, req, callOpts...)
 		if err != nil {
 			handleRegattaError(cmd, err)
 			return

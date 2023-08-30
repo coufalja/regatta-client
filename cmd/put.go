@@ -7,12 +7,18 @@ import (
 
 	"github.com/jamf/regatta/proto"
 	"github.com/spf13/cobra"
+	"google.golang.org/grpc"
 )
 
-var putBinary bool
+var (
+	putBinary   bool
+	putCompress = gzipCompress
+)
 
 func init() {
 	Put.Flags().BoolVar(&putBinary, "binary", false, "provided <value> is binary data encoded using Base64")
+	Put.Flags().Var(&putCompress, "compress", `use compression, allowed values: "gzip", "snappy" and "none"`)
+	Put.RegisterFlagCompletionFunc("compress", compressTypeCompletion)
 }
 
 // Put is a subcommand used for creating/updating records in a table.
@@ -37,8 +43,11 @@ var Put = cobra.Command{
 			cmd.PrintErrln("There was an error while decoding parameters.", err)
 			return
 		}
-
-		_, err = client.Put(timeoutCtx, req)
+		var callOpts []grpc.CallOption
+		if putCompress != noCompress {
+			callOpts = append(callOpts, grpc.UseCompressor(putCompress.String()))
+		}
+		_, err = client.Put(timeoutCtx, req, callOpts...)
 		if err != nil {
 			handleRegattaError(cmd, err)
 		}
