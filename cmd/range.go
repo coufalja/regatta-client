@@ -35,7 +35,9 @@ var Range = cobra.Command{
 		"You can either retrieve all items from the Regatta by providing no key.\n" +
 		"Or you can query for a single item in Regatta by providing item's key.\n" +
 		"Or you can query for all items with given prefix, by providing the given prefix and adding the asterisk (*) to the prefix.\n" +
-		"When key or prefix is provided, it needs to be valid UTF-8 string.",
+		"When key or prefix is provided, it needs to be valid UTF-8 string.\n" +
+		"Retrieved items are serialized into JSON array, where each item is a JSON object with \"key\" field representing key in Regatta " +
+		"and \"value\" field representing value stored under the given key in Regatta.",
 	Example: "regatta-client range table\n" +
 		"regatta-client range table key\n" +
 		"regatta-client range table 'prefix*'",
