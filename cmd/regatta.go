@@ -5,7 +5,7 @@ import (
 	"crypto/x509"
 	"os"
 
-	"github.com/jamf/regatta/proto"
+	"github.com/jamf/regatta/regattapb"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func createClient() (proto.KVClient, error) {
+func createClient() (regattapb.KVClient, error) {
 	pool, err := x509.SystemCertPool()
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func createClient() (proto.KVClient, error) {
 		return nil, err
 	}
 
-	return proto.NewKVClient(conn), nil
+	return regattapb.NewKVClient(conn), nil
 }
 
 func handleRegattaError(cmd *cobra.Command, err error) {

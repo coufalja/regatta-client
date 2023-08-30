@@ -5,7 +5,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/jamf/regatta/proto"
+	"github.com/jamf/regatta/regattapb"
 	"github.com/jamf/regatta/regattaserver"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -19,9 +19,9 @@ func Test_Delete(t *testing.T) {
 	s := grpc.NewServer(grpc.Creds(credentials.NewTLS(generateTLSConfig())))
 
 	storage := new(mockKVService)
-	storage.On("Delete", mock.Anything, mock.Anything).Return(&proto.DeleteRangeResponse{}, nil)
+	storage.On("Delete", mock.Anything, mock.Anything).Return(&regattapb.DeleteRangeResponse{}, nil)
 
-	proto.RegisterKVServer(s, &regattaserver.KVServer{Storage: storage})
+	regattapb.RegisterKVServer(s, &regattaserver.KVServer{Storage: storage})
 	go s.Serve(lis)
 	defer s.Stop()
 

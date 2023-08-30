@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"time"
 
-	"github.com/jamf/regatta/proto"
+	"github.com/jamf/regatta/regattapb"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 )
@@ -54,7 +54,7 @@ var Put = cobra.Command{
 	},
 }
 
-func createPutRequest(args []string) (*proto.PutRequest, error) {
+func createPutRequest(args []string) (*regattapb.PutRequest, error) {
 	table := []byte(args[0])
 	key := []byte(args[1])
 	var value []byte
@@ -68,5 +68,5 @@ func createPutRequest(args []string) (*proto.PutRequest, error) {
 		value = []byte(args[2])
 	}
 
-	return &proto.PutRequest{Table: table, Key: key, Value: value}, nil
+	return &regattapb.PutRequest{Table: table, Key: key, Value: value}, nil
 }
