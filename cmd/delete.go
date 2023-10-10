@@ -1,11 +1,9 @@
 package cmd
 
 import (
-	"context"
 	"strings"
-	"time"
 
-	"github.com/jamf/regatta/regattapb"
+	client "github.com/jamf/regatta-go"
 	"github.com/spf13/cobra"
 )
 
@@ -19,51 +17,28 @@ var Delete = cobra.Command{
 		"When key or prefix is provided, it needs to be valid UTF-8 string.",
 	Example: "regatta-client delete table key\n" +
 		"regatta-client delete table 'prefix*'",
-	Args: cobra.MatchAll(cobra.ExactArgs(2)),
+	Args:   cobra.MatchAll(cobra.ExactArgs(2)),
+	PreRun: connect,
 	Run: func(cmd *cobra.Command, args []string) {
-		client, err := createClient()
-		if err != nil {
-			cmd.PrintErrln("There was an error, while establishing connection to Regatta.", err)
-			return
-		}
-
-		timeoutCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-		req := createDeleteRangeRequest(args)
-
-		_, err = client.DeleteRange(timeoutCtx, req)
+		key, opts := keyAndOptsForDelete(args)
+		_, err := regatta.Table(args[0]).Delete(cmd.Context(), key, opts...)
 		if err != nil {
 			handleRegattaError(cmd, err)
 		}
 	},
 }
 
-func createDeleteRangeRequest(args []string) *regattapb.DeleteRangeRequest {
-	table := args[0]
+func keyAndOptsForDelete(args []string) (string, []client.OpOption) {
 	key := args[1]
 	if strings.HasSuffix(key, "*") {
 		key = strings.TrimSuffix(key, "*")
 		if len(key) == 0 {
 			// delete all
-			return &regattapb.DeleteRangeRequest{
-				Table:    []byte(table),
-				Key:      []byte{0},
-				RangeEnd: []byte{0},
-				PrevKv:   true,
-			}
+			return zero, []client.OpOption{client.WithRange(zero), client.WithPrevKV()}
 		}
 		// delete by prefix
-		return &regattapb.DeleteRangeRequest{
-			Table:    []byte(table),
-			Key:      []byte(key),
-			RangeEnd: []byte(findNextString(key)),
-			PrevKv:   true,
-		}
+		return key, []client.OpOption{client.WithPrefix(), client.WithPrevKV()}
 	}
 	// delete single
-	return &regattapb.DeleteRangeRequest{
-		Table:  []byte(table),
-		Key:    []byte(key),
-		PrevKv: true,
-	}
+	return key, []client.OpOption{client.WithPrevKV()}
 }

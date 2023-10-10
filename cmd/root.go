@@ -1,13 +1,23 @@
 package cmd
 
 import (
+	"context"
+	"errors"
 	"os"
+	"time"
 
+	client "github.com/jamf/regatta-go"
 	"github.com/spf13/cobra"
 )
 
 // Version is set during release of project.
 var Version = "unknown"
+
+var regatta tableClient
+
+type tableClient interface {
+	Table(string) client.Table
+}
 
 // RootCmd is a root command for all the subcommands of regatta-client.
 var RootCmd = cobra.Command{
@@ -15,7 +25,8 @@ var RootCmd = cobra.Command{
 	Short: "Client for Regatta store",
 	Long: "Command-line tool wrapping API calls to Regatta (https://engineering.jamf.com/regatta/).\n" +
 		"Simplifies querying for data in Regatta store and other operations.",
-	Version: Version,
+	Version:           Version,
+	PersistentPreRunE: validateFlags,
 }
 
 var (
@@ -39,5 +50,14 @@ func init() {
 
 // Execute executes root command of regatta-client.
 func Execute() {
-	_ = RootCmd.Execute()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	_ = RootCmd.ExecuteContext(ctx)
+}
+
+func validateFlags(_ *cobra.Command, _ []string) error {
+	if endpointOption == "" {
+		return errors.New("flag '--endpoint' must not be empty")
+	}
+	return nil
 }

@@ -1,30 +1,24 @@
 package cmd
 
 import (
-	"context"
 	"encoding/base64"
 	"encoding/json"
 	"strings"
-	"time"
 
-	"github.com/jamf/regatta/regattapb"
+	client "github.com/jamf/regatta-go"
 	"github.com/spf13/cobra"
-	"google.golang.org/grpc"
 )
 
 var (
-	rangeBinary   bool
-	rangeLimit    int64
-	rangeCompress = gzipCompress
+	rangeBinary bool
+	rangeLimit  int64
 
-	zero = []byte{0}
+	zero = string([]byte{0})
 )
 
 func init() {
 	Range.Flags().BoolVar(&rangeBinary, "binary", false, "avoid decoding keys and values into UTF-8 strings, but rather encode them as Base64 strings")
 	Range.Flags().Int64Var(&rangeLimit, "limit", 0, "limit number of returned items")
-	Range.Flags().Var(&rangeCompress, "compress", `use compression, allowed values: "gzip", "snappy" and "none"`)
-	Range.RegisterFlagCompletionFunc("compress", compressTypeCompletion)
 }
 
 // Range is a subcommand used for retrieving records from a table.
@@ -41,22 +35,11 @@ var Range = cobra.Command{
 	Example: "regatta-client range table\n" +
 		"regatta-client range table key\n" +
 		"regatta-client range table 'prefix*'",
-	Args: cobra.MatchAll(cobra.MinimumNArgs(1), cobra.MaximumNArgs(2)),
+	Args:   cobra.MatchAll(cobra.MinimumNArgs(1), cobra.MaximumNArgs(2)),
+	PreRun: connect,
 	Run: func(cmd *cobra.Command, args []string) {
-		client, err := createClient()
-		if err != nil {
-			cmd.PrintErrln("There was an error, while establishing connection to Regatta.", err)
-			return
-		}
-
-		timeoutCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-		req := createRangeRequest(args)
-		var callOpts []grpc.CallOption
-		if rangeCompress != noCompress {
-			callOpts = append(callOpts, grpc.UseCompressor(rangeCompress.String()))
-		}
-		response, err := client.Range(timeoutCtx, req, callOpts...)
+		key, opts := keyAndOptsForRange(args)
+		response, err := regatta.Table(args[0]).Get(cmd.Context(), key, opts...)
 		if err != nil {
 			handleRegattaError(cmd, err)
 			return
@@ -76,43 +59,23 @@ type rangeCommandResult struct {
 	Value string `json:"value"`
 }
 
-func createRangeRequest(args []string) *regattapb.RangeRequest {
-	table := args[0]
+func keyAndOptsForRange(args []string) (string, []client.OpOption) {
 	if len(args) == 2 {
 		key := args[1]
 		if strings.HasSuffix(key, "*") {
 			key = strings.TrimSuffix(key, "*")
 			if len(key) == 0 {
 				// get all
-				return &regattapb.RangeRequest{
-					Table:    []byte(table),
-					Key:      zero,
-					RangeEnd: zero,
-					Limit:    rangeLimit,
-				}
+				return zero, []client.OpOption{client.WithRange(zero), client.WithLimit(rangeLimit)}
 			}
 			// prefix search
-			return &regattapb.RangeRequest{
-				Table:    []byte(table),
-				Key:      []byte(key),
-				RangeEnd: []byte(findNextString(key)),
-				Limit:    rangeLimit,
-			}
+			return key, []client.OpOption{client.WithPrefix(), client.WithLimit(rangeLimit)}
 		}
 		// get by ID
-		return &regattapb.RangeRequest{
-			Table: []byte(table),
-			Key:   []byte(key),
-			Limit: rangeLimit,
-		}
+		return key, []client.OpOption{client.WithLimit(rangeLimit)}
 	}
 	// get all
-	return &regattapb.RangeRequest{
-		Table:    []byte(table),
-		Key:      zero,
-		RangeEnd: zero,
-		Limit:    rangeLimit,
-	}
+	return zero, []client.OpOption{client.WithRange(zero), client.WithLimit(rangeLimit)}
 }
 
 func getValue(data []byte) string {

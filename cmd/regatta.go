@@ -1,42 +1,41 @@
 package cmd
 
 import (
-	"crypto/tls"
-	"crypto/x509"
-	"os"
-
-	"github.com/jamf/regatta/regattapb"
+	client "github.com/jamf/regatta-go"
 	"github.com/spf13/cobra"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
 )
 
-func createClient() (regattapb.KVClient, error) {
-	pool, err := x509.SystemCertPool()
-	if err != nil {
-		return nil, err
-	}
-	if len(certOption) != 0 {
-		certs, err := os.ReadFile(certOption)
+type logger struct{}
+
+func (p logger) Infof(_ string, _ ...any)  {}
+func (p logger) Debugf(_ string, _ ...any) {}
+func (p logger) Warnf(_ string, _ ...any)  {}
+func (p logger) Errorf(_ string, _ ...any) {}
+
+func connect(cmd *cobra.Command, _ []string) {
+	// Allow for mocking in tests.
+	if regatta == nil {
+		cc, err := client.NewClientConfig(&client.ConfigSpec{
+			Logger:    logger{},
+			Endpoints: []string{endpointOption},
+			Secure: &client.SecureConfig{
+				Cacert:             certOption,
+				InsecureSkipVerify: insecureOption,
+			},
+		})
 		if err != nil {
-			return nil, err
+			cmd.PrintErrln("There was an error, with config of connection to Regatta.", err)
+			return
 		}
-		pool.AppendCertsFromPEM(certs)
+		cl, err := client.New(cc)
+		if err != nil {
+			cmd.PrintErrln("There was an error, while establishing connection to Regatta.", err)
+			return
+		}
+		regatta = cl
 	}
-
-	connOpts := []grpc.DialOption{
-		// nolint:gosec
-		grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{RootCAs: pool, InsecureSkipVerify: insecureOption})),
-	}
-
-	conn, err := grpc.Dial(endpointOption, connOpts...)
-	if err != nil {
-		return nil, err
-	}
-
-	return regattapb.NewKVClient(conn), nil
 }
 
 func handleRegattaError(cmd *cobra.Command, err error) {
