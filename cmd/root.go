@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"errors"
 	"os"
 	"time"
 
@@ -25,8 +24,8 @@ var RootCmd = cobra.Command{
 	Short: "Client for Regatta store",
 	Long: "Command-line tool wrapping API calls to Regatta (https://engineering.jamf.com/regatta/).\n" +
 		"Simplifies querying for data in Regatta store and other operations.",
-	Version:           Version,
-	PersistentPreRunE: validateFlags,
+	Version:      Version,
+	SilenceUsage: true,
 }
 
 var (
@@ -53,11 +52,4 @@ func Execute() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	_ = RootCmd.ExecuteContext(ctx)
-}
-
-func validateFlags(_ *cobra.Command, _ []string) error {
-	if endpointOption == "" {
-		return errors.New("flag '--endpoint' must not be empty")
-	}
-	return nil
 }
