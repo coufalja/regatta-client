@@ -2,33 +2,24 @@ package cmd
 
 import (
 	"bytes"
-	"net"
 	"testing"
 
-	"github.com/jamf/regatta/regattapb"
-	"github.com/jamf/regatta/regattaserver"
+	client "github.com/jamf/regatta-go"
 	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 )
 
 func Test_Delete(t *testing.T) {
-	lis, err := net.Listen("tcp", "localhost:0")
-	require.NoError(t, err)
-	s := grpc.NewServer(grpc.Creds(credentials.NewTLS(generateTLSConfig())))
+	mtbl := &mockTable{}
+	mtbl.On("Delete", mock.Anything, "key", mock.Anything).Return(&client.DeleteResponse{}, error(nil))
 
-	storage := new(mockKVService)
-	storage.On("Delete", mock.Anything, mock.Anything).Return(&regattapb.DeleteRangeResponse{}, nil)
-
-	regattapb.RegisterKVServer(s, &regattaserver.KVServer{Storage: storage})
-	go s.Serve(lis)
-	defer s.Stop()
+	mclient := &mockClient{}
+	regatta = mclient
+	mclient.On("Table", "table").Return(mtbl)
 
 	buf := new(bytes.Buffer)
 	RootCmd.SetOut(buf)
-	RootCmd.SetArgs([]string{"--endpoint", lis.Addr().String(), "--cert", "test.crt", "delete", "table", "key"})
+	RootCmd.SetArgs([]string{"--endpoint", "localhost:8443", "--cert", "test.crt", "delete", "table", "key"})
 	RootCmd.Execute()
 
-	storage.AssertExpectations(t)
+	mclient.AssertExpectations(t)
 }
