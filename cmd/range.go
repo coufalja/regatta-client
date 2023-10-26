@@ -35,8 +35,8 @@ var Range = cobra.Command{
 	Example: "regatta-client range table\n" +
 		"regatta-client range table key\n" +
 		"regatta-client range table 'prefix*'",
-	Args:   cobra.MatchAll(cobra.MinimumNArgs(1), cobra.MaximumNArgs(2)),
-	PreRun: connect,
+	Args:    cobra.MatchAll(cobra.MinimumNArgs(1), cobra.MaximumNArgs(2)),
+	PreRunE: connect,
 	Run: func(cmd *cobra.Command, args []string) {
 		key, opts := keyAndOptsForRange(args)
 		response, err := regatta.Table(args[0]).Get(cmd.Context(), key, opts...)

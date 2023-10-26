@@ -1,11 +1,16 @@
 package cmd
 
 import (
+	"time"
+
 	client "github.com/jamf/regatta-go"
 	"github.com/spf13/cobra"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+const dialTimeout = 2 * time.Second
 
 type logger struct{}
 
@@ -14,7 +19,7 @@ func (p logger) Debugf(_ string, _ ...any) {}
 func (p logger) Warnf(_ string, _ ...any)  {}
 func (p logger) Errorf(_ string, _ ...any) {}
 
-func connect(cmd *cobra.Command, _ []string) {
+func connect(cmd *cobra.Command, _ []string) error {
 	// Allow for mocking in tests.
 	if regatta == nil {
 		cc, err := client.NewClientConfig(&client.ConfigSpec{
@@ -24,18 +29,21 @@ func connect(cmd *cobra.Command, _ []string) {
 				Cacert:             certOption,
 				InsecureSkipVerify: insecureOption,
 			},
+			DialTimeout: dialTimeout,
 		})
+		cc.DialOptions = append(cc.DialOptions, grpc.WithBlock(), grpc.WithReturnConnectionError())
 		if err != nil {
-			cmd.PrintErrln("There was an error, with config of connection to Regatta.", err)
-			return
+			cmd.PrintErrln("There was an error, with config of connection to Regatta.")
+			return err
 		}
 		cl, err := client.New(cc)
 		if err != nil {
-			cmd.PrintErrln("There was an error, while establishing connection to Regatta.", err)
-			return
+			cmd.PrintErrln("There was an error, while establishing connection to Regatta.")
+			return err
 		}
 		regatta = cl
 	}
+	return nil
 }
 
 func handleRegattaError(cmd *cobra.Command, err error) {

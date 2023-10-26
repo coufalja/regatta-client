@@ -17,8 +17,8 @@ var Delete = cobra.Command{
 		"When key or prefix is provided, it needs to be valid UTF-8 string.",
 	Example: "regatta-client delete table key\n" +
 		"regatta-client delete table 'prefix*'",
-	Args:   cobra.MatchAll(cobra.ExactArgs(2)),
-	PreRun: connect,
+	Args:    cobra.MatchAll(cobra.ExactArgs(2)),
+	PreRunE: connect,
 	Run: func(cmd *cobra.Command, args []string) {
 		key, opts := keyAndOptsForDelete(args)
 		_, err := regatta.Table(args[0]).Delete(cmd.Context(), key, opts...)

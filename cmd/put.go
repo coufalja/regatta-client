@@ -19,7 +19,7 @@ var Put = cobra.Command{
 	Long:    "Put data into Regatta store using Put query as defined in API (https://engineering.jamf.com/regatta/api/#put).",
 	Example: "regatta-client put table key value",
 	Args:    cobra.MatchAll(cobra.ExactArgs(3)),
-	PreRun:  connect,
+	PreRunE: connect,
 	Run: func(cmd *cobra.Command, args []string) {
 		key, value, err := keyAndValueForPut(args)
 		if err != nil {
