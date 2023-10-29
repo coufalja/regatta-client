@@ -1,16 +1,12 @@
 package cmd
 
 import (
-	"time"
-
 	client "github.com/jamf/regatta-go"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
-
-const dialTimeout = 2 * time.Second
 
 type logger struct{}
 

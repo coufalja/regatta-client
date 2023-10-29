@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"strings"
@@ -47,8 +48,10 @@ var Range = cobra.Command{
 	},
 	PreRunE: connect,
 	Run: func(cmd *cobra.Command, args []string) {
+		ctx, cancel := context.WithTimeout(cmd.Context(), timeout)
+		defer cancel()
 		key, opts := keyAndOptsForRange(args)
-		response, err := regatta.Table(args[0]).Get(cmd.Context(), key, opts...)
+		response, err := regatta.Table(args[0]).Get(ctx, key, opts...)
 		if err != nil {
 			handleRegattaError(cmd, err)
 			return

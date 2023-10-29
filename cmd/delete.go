@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"strings"
 
 	client "github.com/jamf/regatta-go"
@@ -29,8 +30,10 @@ var Delete = cobra.Command{
 	},
 	PreRunE: connect,
 	Run: func(cmd *cobra.Command, args []string) {
+		ctx, cancel := context.WithTimeout(cmd.Context(), timeout)
+		defer cancel()
 		key, opts := keyAndOptsForDelete(args)
-		_, err := regatta.Table(args[0]).Delete(cmd.Context(), key, opts...)
+		_, err := regatta.Table(args[0]).Delete(ctx, key, opts...)
 		if err != nil {
 			handleRegattaError(cmd, err)
 		}
