@@ -35,7 +35,16 @@ var Range = cobra.Command{
 	Example: "regatta-client range table\n" +
 		"regatta-client range table key\n" +
 		"regatta-client range table 'prefix*'",
-	Args:    cobra.MatchAll(cobra.MinimumNArgs(1), cobra.MaximumNArgs(2)),
+	Args: cobra.MatchAll(cobra.MinimumNArgs(1), cobra.MaximumNArgs(2)),
+	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		var comps []string
+		if len(args) == 0 {
+			comps = cobra.AppendActiveHelp(comps, "You must specify a Regatta table name")
+		} else if len(args) == 1 {
+			comps = cobra.AppendActiveHelp(comps, "You can provide a key or prefix to search for. If not provided all items from the table is returned.")
+		}
+		return comps, cobra.ShellCompDirectiveNoFileComp
+	},
 	PreRunE: connect,
 	Run: func(cmd *cobra.Command, args []string) {
 		key, opts := keyAndOptsForRange(args)
