@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"encoding/base64"
 
 	"github.com/spf13/cobra"
@@ -32,12 +33,14 @@ var Put = cobra.Command{
 	},
 	PreRunE: connect,
 	Run: func(cmd *cobra.Command, args []string) {
+		ctx, cancel := context.WithTimeout(cmd.Context(), timeout)
+		defer cancel()
 		key, value, err := keyAndValueForPut(args)
 		if err != nil {
 			cmd.PrintErrln("There was an error while decoding parameters.", err)
 			return
 		}
-		_, err = regatta.Table(args[0]).Put(cmd.Context(), key, value)
+		_, err = regatta.Table(args[0]).Put(ctx, key, value)
 		if err != nil {
 			handleRegattaError(cmd, err)
 		}

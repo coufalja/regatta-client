@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"os"
 	"time"
 
@@ -32,12 +31,19 @@ var (
 	endpointOption string
 	insecureOption bool
 	certOption     string
+	timeout        time.Duration
+	dialTimeout    time.Duration
 )
 
 func init() {
-	RootCmd.PersistentFlags().StringVar(&endpointOption, "endpoint", "localhost:8443", "regatta API endpoint")
-	RootCmd.PersistentFlags().BoolVar(&insecureOption, "insecure", false, "allow insecure connection, controls whether certificates are validated")
-	RootCmd.PersistentFlags().StringVar(&certOption, "cert", "", "regatta CA cert")
+	// register common flags directly to the subcommands
+	for _, c := range []*cobra.Command{&Range, &Delete, &Put} {
+		c.Flags().StringVar(&endpointOption, "endpoint", "localhost:8443", "Regatta API endpoint")
+		c.Flags().BoolVar(&insecureOption, "insecure", false, "allow insecure connection, controls whether certificates are validated")
+		c.Flags().StringVar(&certOption, "cert", "", "Regatta CA cert")
+		c.Flags().DurationVar(&timeout, "timeout", 10*time.Second, "timeout for the Regatta operation")
+		c.Flags().DurationVar(&dialTimeout, "dial-timeout", 2*time.Second, "timeout for establishing the connection to the Regatta")
+	}
 
 	RootCmd.AddCommand(&Range)
 	RootCmd.AddCommand(&Delete)
@@ -49,7 +55,5 @@ func init() {
 
 // Execute executes root command of regatta-client.
 func Execute() {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	_ = RootCmd.ExecuteContext(ctx)
+	_ = RootCmd.Execute()
 }
