@@ -27,11 +27,11 @@ func connect(cmd *cobra.Command, _ []string) error {
 			},
 			DialTimeout: dialTimeout,
 		})
-		cc.DialOptions = append(cc.DialOptions, grpc.WithBlock(), grpc.WithReturnConnectionError())
 		if err != nil {
 			cmd.PrintErrln("There was an error, with config of connection to Regatta.")
 			return err
 		}
+		cc.DialOptions = append(cc.DialOptions, grpc.WithBlock(), grpc.WithReturnConnectionError())
 		cl, err := client.New(cc)
 		if err != nil {
 			cmd.PrintErrln("There was an error, while establishing connection to Regatta.")
