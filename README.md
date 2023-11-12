@@ -21,6 +21,8 @@ or using Go tooling
 go install github.com/tantalor93/regatta-client
 ```
 
+Or you can download latest *regatta-client* binary archive for your operating system and architecture [here](https://github.com/Tantalor93/regatta-client/releases/latest)
+
 ## Usage
 ```
 Command-line tool wrapping API calls to Regatta (https://engineering.jamf.com/regatta/).
