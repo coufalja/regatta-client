@@ -2,24 +2,54 @@ package cmd
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 
 	client "github.com/jamf/regatta-go"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func Test_Delete(t *testing.T) {
 	mtbl := &mockTable{}
-	mtbl.On("Delete", mock.Anything, "key", mock.Anything).Return(&client.DeleteResponse{}, error(nil))
+	mtbl.On("Delete", mock.Anything, "key", mock.Anything).Return(&client.DeleteResponse{}, nil)
 
 	mclient := &mockClient{}
 	regatta = mclient
 	mclient.On("Table", "table").Return(mtbl)
 
-	buf := new(bytes.Buffer)
-	RootCmd.SetOut(buf)
-	RootCmd.SetArgs([]string{"--endpoint", "localhost:8443", "--cert", "test.crt", "delete", "table", "key"})
+	stdoutBuf := new(bytes.Buffer)
+	stderrBuf := new(bytes.Buffer)
+	RootCmd.SetOut(stdoutBuf)
+	RootCmd.SetErr(stderrBuf)
+
+	RootCmd.SetArgs([]string{"delete", "table", "key"})
 	RootCmd.Execute()
 
+	assert.Empty(t, stdoutBuf)
+	assert.Empty(t, stderrBuf)
+	mclient.AssertExpectations(t)
+}
+
+func Test_Delete_Error(t *testing.T) {
+	mtbl := &mockTable{}
+	mtbl.On("Delete", mock.Anything, "key", mock.Anything).Return(&client.DeleteResponse{}, status.Error(codes.NotFound, "table not found"))
+
+	mclient := &mockClient{}
+	regatta = mclient
+	mclient.On("Table", "table").Return(mtbl)
+
+	stdoutBuf := new(bytes.Buffer)
+	stderrBuf := new(bytes.Buffer)
+	RootCmd.SetOut(stdoutBuf)
+	RootCmd.SetErr(stderrBuf)
+
+	RootCmd.SetArgs([]string{"delete", "table", "key"})
+	RootCmd.Execute()
+
+	assert.Empty(t, stdoutBuf)
+	assert.Equal(t, `The requested resource was not found: table not found`, strings.TrimSpace(stderrBuf.String()))
 	mclient.AssertExpectations(t)
 }
