@@ -10,7 +10,7 @@
 Unofficial CLI client for querying [Regatta store](https://github.com/jamf/regatta) 
 
 ## Installation
-you can install `regatta-client` using [Homebrew](https://brew.sh/)
+you can install **regatta-client** using [Homebrew](https://brew.sh/)
 
 ```
 brew tap tantalor93/regatta-client
@@ -23,7 +23,7 @@ or using Go tooling
 go install github.com/tantalor93/regatta-client
 ```
 
-Or you can download latest *regatta-client* binary archive for your operating system and architecture [here](https://github.com/Tantalor93/regatta-client/releases/latest)
+Or you can download latest **regatta-client** binary archive for your operating system and architecture [here](https://github.com/Tantalor93/regatta-client/releases/latest)
 
 ## Usage
 
@@ -59,8 +59,8 @@ this example retrieves all records in `example-table` table
 regatta-client range example-table --endpoint localhost:8443 --insecure
 ```
 
-### get all records in table without decoding keys/values to UTF-8
-this example retrieves all records in `example-table` table without decoding binary data, data is shown as Base64 strings
+### get all records in table without decoding keys/values to UTF-8 strings
+this example retrieves all records in `example-table` table without decoding binary data, this is achieved by using `--binary` flag. Retrieved key-value pairs are shown as Base64 strings.
 
 ```
 regatta-client range example-table --endpoint localhost:8443 --binary --insecure 
@@ -74,7 +74,7 @@ regatta-client range example-table example-key --endpoint localhost:8443 --insec
 ```
 
 ### get all records with prefix in table
-this example retrieves all records with keys prefixed with `example` in `example-table` table
+this example retrieves all records with keys prefixed with `example` in `example-table` table. Note the asterisk, when doing prefix search! Without the asterisk, it is not a prefix search.
 
 ```
 regatta-client range example-table 'example*' --endpoint localhost:8443 --insecure 
@@ -88,7 +88,7 @@ regatta-client delete example-table example-key --endpoint localhost:8443 --inse
 ```
 
 ### delete all records with given prefix in table 
-this example deletes all records with keys prefixed with `example` in `example-table` table
+this example deletes all records with keys prefixed with `example` in `example-table` table. Note the asterisk, when doing prefix delete! Without the asterisk, it is not a prefix delete.
 
 ```
 regatta-client delete example-table 'example*' --endpoint localhost:8443 --insecure
