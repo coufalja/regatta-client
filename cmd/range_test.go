@@ -28,7 +28,7 @@ func Test_Range_All(t *testing.T) {
 	RootCmd.SetOut(stdoutBuf)
 	RootCmd.SetErr(stderrBuf)
 
-	RootCmd.SetArgs([]string{"--limit", "1", "range", "table"})
+	RootCmd.SetArgs([]string{"--limit", "1", "range", "table", "--no-color"})
 	RootCmd.Execute()
 
 	assert.Equal(t, `test-key: test-value`, strings.TrimSpace(stdoutBuf.String()))
@@ -52,7 +52,7 @@ func Test_Range_All_Star(t *testing.T) {
 	RootCmd.SetOut(stdoutBuf)
 	RootCmd.SetErr(stderrBuf)
 
-	RootCmd.SetArgs([]string{"--limit", "1", "range", "table", "*"})
+	RootCmd.SetArgs([]string{"--limit", "1", "range", "table", "*", "--no-color"})
 	RootCmd.Execute()
 
 	assert.Equal(t, `test-key: test-value`, strings.TrimSpace(stdoutBuf.String()))
@@ -79,7 +79,7 @@ func Test_Range_All_Paging(t *testing.T) {
 	RootCmd.SetOut(stdoutBuf)
 	RootCmd.SetErr(stderrBuf)
 
-	RootCmd.SetArgs([]string{"range", "table"})
+	RootCmd.SetArgs([]string{"range", "table", "--no-color"})
 	RootCmd.Execute()
 
 	assert.Equal(t, "test-key: test-value\ntest-key2: test-value2", strings.TrimSpace(stdoutBuf.String()))
@@ -126,7 +126,7 @@ func Test_Range_All_Paging_Limit(t *testing.T) {
 	RootCmd.SetOut(stdoutBuf)
 	RootCmd.SetErr(stderrBuf)
 
-	RootCmd.SetArgs([]string{"--limit", "1", "range", "table"})
+	RootCmd.SetArgs([]string{"--limit", "1", "range", "table", "--no-color"})
 	RootCmd.Execute()
 
 	assert.Equal(t, `test-key: test-value`, strings.TrimSpace(stdoutBuf.String()))
@@ -149,7 +149,7 @@ func Test_Range_Single(t *testing.T) {
 	RootCmd.SetOut(stdoutBuf)
 	RootCmd.SetErr(stderrBuf)
 
-	RootCmd.SetArgs([]string{"range", "table", "test-key"})
+	RootCmd.SetArgs([]string{"range", "table", "test-key", "--no-color"})
 	RootCmd.Execute()
 
 	assert.Equal(t, `test-key: test-value`, strings.TrimSpace(stdoutBuf.String()))
@@ -173,7 +173,7 @@ func Test_Range_Prefix(t *testing.T) {
 	RootCmd.SetOut(stdoutBuf)
 	RootCmd.SetErr(stderrBuf)
 
-	RootCmd.SetArgs([]string{"range", "table", "test-key*"})
+	RootCmd.SetArgs([]string{"range", "table", "test-key*", "--no-color"})
 	RootCmd.Execute()
 
 	assert.Equal(t, `test-key: test-value`, strings.TrimSpace(stdoutBuf.String()))

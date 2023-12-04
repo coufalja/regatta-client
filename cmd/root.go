@@ -4,6 +4,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/fatih/color"
 	client "github.com/jamf/regatta-go"
 	"github.com/spf13/cobra"
 )
@@ -23,6 +24,10 @@ var RootCmd = cobra.Command{
 	Short: "Client for Regatta store",
 	Long: "Command-line tool wrapping API calls to Regatta (https://engineering.jamf.com/regatta/).\n" +
 		"Simplifies querying for data in Regatta store and other operations.",
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		color.NoColor = noColor
+		return nil
+	},
 	Version:      Version,
 	SilenceUsage: true,
 }
@@ -33,6 +38,7 @@ var (
 	certOption     string
 	timeout        time.Duration
 	dialTimeout    time.Duration
+	noColor        bool
 )
 
 func init() {
@@ -44,6 +50,8 @@ func init() {
 		c.Flags().DurationVar(&timeout, "timeout", 10*time.Second, "timeout for the Regatta operation")
 		c.Flags().DurationVar(&dialTimeout, "dial-timeout", 2*time.Second, "timeout for establishing the connection to the Regatta")
 	}
+
+	RootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "disable color output")
 
 	RootCmd.AddCommand(&Range)
 	RootCmd.AddCommand(&Delete)
