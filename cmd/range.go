@@ -51,16 +51,45 @@ var Range = cobra.Command{
 		ctx, cancel := context.WithTimeout(cmd.Context(), timeout)
 		defer cancel()
 		key, opts := keyAndOptsForRange(args)
-		response, err := regatta.Table(args[0]).Get(ctx, key, opts...)
-		if err != nil {
-			handleRegattaError(cmd, err)
-			return
+
+		var resps []*client.GetResponse
+		var err error
+		var total int64
+
+		for resp := (*client.GetResponse)(nil); resp == nil || resp.More; {
+			resp, err = regatta.Table(args[0]).Get(ctx, key, opts...)
+			if err != nil {
+				handleRegattaError(cmd, err)
+				return
+			}
+			if len(resps) != 0 && len(resp.Kvs) > 0 {
+				// remove the duplicated key due to paging
+				resp.Kvs = resp.Kvs[1:]
+				resp.Count--
+			}
+			resps = append(resps, resp)
+			total += resp.Count
+			if rangeLimit != 0 && total >= rangeLimit {
+				// we have enough data according to limit
+				break
+			}
+			if resp.More {
+				// the same key will be included in next page
+				key = string(resp.Kvs[len(resp.Kvs)-1].Key)
+			}
 		}
 
 		results := make([]rangeCommandResult, 0)
-		for _, kv := range response.Kvs {
-			results = append(results, rangeCommandResult{Key: getValue(kv.Key), Value: getValue(kv.Value)})
+		for _, resp := range resps {
+			for _, kv := range resp.Kvs {
+				results = append(results, rangeCommandResult{Key: getValue(kv.Key), Value: getValue(kv.Value)})
+			}
 		}
+
+		if rangeLimit != 0 {
+			results = results[:rangeLimit]
+		}
+
 		marshal, _ := json.Marshal(results)
 		cmd.Println(string(marshal))
 	},
