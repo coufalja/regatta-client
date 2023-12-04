@@ -33,6 +33,48 @@ func Test_Delete(t *testing.T) {
 	mclient.AssertExpectations(t)
 }
 
+func Test_Delete_Prefix(t *testing.T) {
+	mtbl := &mockTable{}
+	mtbl.On("Delete", mock.Anything, "key", mock.Anything).Return(&client.DeleteResponse{}, nil)
+
+	mclient := &mockClient{}
+	regatta = mclient
+	mclient.On("Table", "table").Return(mtbl)
+
+	stdoutBuf := new(bytes.Buffer)
+	stderrBuf := new(bytes.Buffer)
+	RootCmd.SetOut(stdoutBuf)
+	RootCmd.SetErr(stderrBuf)
+
+	RootCmd.SetArgs([]string{"delete", "table", "key*"})
+	RootCmd.Execute()
+
+	assert.Empty(t, stdoutBuf)
+	assert.Empty(t, stderrBuf)
+	mclient.AssertExpectations(t)
+}
+
+func Test_Delete_All(t *testing.T) {
+	mtbl := &mockTable{}
+	mtbl.On("Delete", mock.Anything, string([]byte{0}), mock.Anything).Return(&client.DeleteResponse{}, nil)
+
+	mclient := &mockClient{}
+	regatta = mclient
+	mclient.On("Table", "table").Return(mtbl)
+
+	stdoutBuf := new(bytes.Buffer)
+	stderrBuf := new(bytes.Buffer)
+	RootCmd.SetOut(stdoutBuf)
+	RootCmd.SetErr(stderrBuf)
+
+	RootCmd.SetArgs([]string{"delete", "table", "*"})
+	RootCmd.Execute()
+
+	assert.Empty(t, stdoutBuf)
+	assert.Empty(t, stderrBuf)
+	mclient.AssertExpectations(t)
+}
+
 func Test_Delete_Error(t *testing.T) {
 	mtbl := &mockTable{}
 	mtbl.On("Delete", mock.Anything, "key", mock.Anything).Return(&client.DeleteResponse{}, status.Error(codes.NotFound, "table not found"))

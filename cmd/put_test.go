@@ -34,6 +34,48 @@ func Test_Put(t *testing.T) {
 	mclient.AssertExpectations(t)
 }
 
+func Test_Put_Binary(t *testing.T) {
+	resetPutFlags()
+	mtbl := &mockTable{}
+	mtbl.On("Put", mock.Anything, "key", "data", mock.Anything).Return(&client.PutResponse{}, nil)
+
+	mclient := &mockClient{}
+	regatta = mclient
+	mclient.On("Table", "table").Return(mtbl)
+
+	stdoutBuf := new(bytes.Buffer)
+	stderrBuf := new(bytes.Buffer)
+	RootCmd.SetOut(stdoutBuf)
+	RootCmd.SetErr(stderrBuf)
+
+	RootCmd.SetArgs([]string{"put", "table", "key", "ZGF0YQ==", "--binary"})
+	RootCmd.Execute()
+
+	assert.Empty(t, stdoutBuf)
+	assert.Empty(t, stderrBuf)
+}
+
+func Test_Put_Binary_Error(t *testing.T) {
+	resetPutFlags()
+	mtbl := &mockTable{}
+	mtbl.On("Put", mock.Anything, "key", "data", mock.Anything).Return(&client.PutResponse{}, nil)
+
+	mclient := &mockClient{}
+	regatta = mclient
+	mclient.On("Table", "table").Return(mtbl)
+
+	stdoutBuf := new(bytes.Buffer)
+	stderrBuf := new(bytes.Buffer)
+	RootCmd.SetOut(stdoutBuf)
+	RootCmd.SetErr(stderrBuf)
+
+	RootCmd.SetArgs([]string{"put", "table", "key", "invalid", "--binary"})
+	RootCmd.Execute()
+
+	assert.Empty(t, stdoutBuf)
+	assert.Equal(t, `There was an error while decoding parameters. illegal base64 data at input byte 4`, strings.TrimSpace(stderrBuf.String()))
+}
+
 func Test_Put_Error(t *testing.T) {
 	resetPutFlags()
 	mtbl := &mockTable{}
