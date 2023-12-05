@@ -14,7 +14,7 @@ import (
 
 func Test_Delete(t *testing.T) {
 	mtbl := &mockTable{}
-	mtbl.On("Delete", mock.Anything, "key", mock.Anything).Return(&client.DeleteResponse{}, nil)
+	mtbl.On("Delete", mock.Anything, "key", mock.Anything).Return(&client.DeleteResponse{Deleted: 1}, nil)
 
 	mclient := &mockClient{}
 	regatta = mclient
@@ -35,7 +35,7 @@ func Test_Delete(t *testing.T) {
 
 func Test_Delete_Prefix(t *testing.T) {
 	mtbl := &mockTable{}
-	mtbl.On("Delete", mock.Anything, "key", mock.Anything).Return(&client.DeleteResponse{}, nil)
+	mtbl.On("Delete", mock.Anything, "key", mock.Anything).Return(&client.DeleteResponse{Deleted: 2}, nil)
 
 	mclient := &mockClient{}
 	regatta = mclient
@@ -46,17 +46,17 @@ func Test_Delete_Prefix(t *testing.T) {
 	RootCmd.SetOut(stdoutBuf)
 	RootCmd.SetErr(stderrBuf)
 
-	RootCmd.SetArgs([]string{"delete", "table", "key*"})
+	RootCmd.SetArgs([]string{"delete", "table", "key*", "--no-color"})
 	RootCmd.Execute()
 
-	assert.Empty(t, stdoutBuf)
+	assert.Equal(t, `2`, strings.TrimSpace(stdoutBuf.String()))
 	assert.Empty(t, stderrBuf)
 	mclient.AssertExpectations(t)
 }
 
 func Test_Delete_All(t *testing.T) {
 	mtbl := &mockTable{}
-	mtbl.On("Delete", mock.Anything, string([]byte{0}), mock.Anything).Return(&client.DeleteResponse{}, nil)
+	mtbl.On("Delete", mock.Anything, string([]byte{0}), mock.Anything).Return(&client.DeleteResponse{Deleted: 3}, nil)
 
 	mclient := &mockClient{}
 	regatta = mclient
@@ -67,10 +67,10 @@ func Test_Delete_All(t *testing.T) {
 	RootCmd.SetOut(stdoutBuf)
 	RootCmd.SetErr(stderrBuf)
 
-	RootCmd.SetArgs([]string{"delete", "table", "*"})
+	RootCmd.SetArgs([]string{"delete", "table", "*", "--no-color"})
 	RootCmd.Execute()
 
-	assert.Empty(t, stdoutBuf)
+	assert.Equal(t, `3`, strings.TrimSpace(stdoutBuf.String()))
 	assert.Empty(t, stderrBuf)
 	mclient.AssertExpectations(t)
 }
