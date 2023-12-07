@@ -108,29 +108,60 @@ func Test_Range_Error(t *testing.T) {
 }
 
 func Test_Range_All_Paging_Limit(t *testing.T) {
-	resetRangeFlags()
+	tests := []struct {
+		name  string
+		resps []client.FakeResponse
+	}{
+		{
+			name: "second page matches directly the limit",
+			resps: []client.FakeResponse{
+				{
+					Response: (&client.GetResponse{Kvs: []*client.KeyValue{
+						{Key: []byte("test-key"), Value: []byte("test-value")}}, More: true, Count: 1}).OpResponse(),
+				},
+				{
+					Response: (&client.GetResponse{Kvs: []*client.KeyValue{
+						{Key: []byte("test-key"), Value: []byte("test-value")},
+						{Key: []byte("test-key2"), Value: []byte("test-value2")}}, Count: 2}).OpResponse(),
+				},
+			},
+		},
+		{
+			name: "second page is over the limit",
+			resps: []client.FakeResponse{
+				{
+					Response: (&client.GetResponse{Kvs: []*client.KeyValue{
+						{Key: []byte("test-key"), Value: []byte("test-value")}}, More: true, Count: 1}).OpResponse(),
+				},
+				{
+					Response: (&client.GetResponse{Kvs: []*client.KeyValue{
+						{Key: []byte("test-key"), Value: []byte("test-value")},
+						{Key: []byte("test-key2"), Value: []byte("test-value2")},
+						{Key: []byte("test-key3"), Value: []byte("test-value3")}}, Count: 3}).OpResponse(),
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			resetRangeFlags()
 
-	resp1 := client.GetResponse{Kvs: []*client.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}, More: true, Count: 1}
-	resp2 := client.GetResponse{Kvs: []*client.KeyValue{
-		{Key: []byte("test-key"), Value: []byte("test-value")}, {Key: []byte("test-key2"), Value: []byte("test-value2")}}, Count: 1}
+			fake, cancel := client.NewFake(tt.resps...)
+			defer cancel()
+			regatta = fake.Client()
 
-	fake, cancel := client.NewFake(
-		client.FakeResponse{Response: resp1.OpResponse(), Err: nil},
-		client.FakeResponse{Response: resp2.OpResponse(), Err: nil},
-	)
-	defer cancel()
-	regatta = fake.Client()
+			stdoutBuf := new(bytes.Buffer)
+			stderrBuf := new(bytes.Buffer)
+			RootCmd.SetOut(stdoutBuf)
+			RootCmd.SetErr(stderrBuf)
 
-	stdoutBuf := new(bytes.Buffer)
-	stderrBuf := new(bytes.Buffer)
-	RootCmd.SetOut(stdoutBuf)
-	RootCmd.SetErr(stderrBuf)
+			RootCmd.SetArgs([]string{"--limit", "2", "range", "table", "--no-color", "--timeout", "2m"})
+			RootCmd.Execute()
 
-	RootCmd.SetArgs([]string{"--limit", "1", "range", "table", "--no-color"})
-	RootCmd.Execute()
-
-	assert.Equal(t, `test-key: test-value`, strings.TrimSpace(stdoutBuf.String()))
-	assert.Empty(t, stderrBuf)
+			assert.Equal(t, "test-key: test-value\ntest-key2: test-value2", strings.TrimSpace(stdoutBuf.String()))
+			assert.Empty(t, stderrBuf)
+		})
+	}
 }
 
 func Test_Range_Single(t *testing.T) {
