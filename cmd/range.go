@@ -56,6 +56,9 @@ var Range = cobra.Command{
 
 		var resps []*client.GetResponse
 		var err error
+		firstRegattaCall := true
+		bufferAll := output == jsonFormat
+
 		var total int64
 
 		for resp := (*client.GetResponse)(nil); resp == nil || resp.More; {
@@ -64,39 +67,58 @@ var Range = cobra.Command{
 				handleRegattaError(cmd, err)
 				return
 			}
-			if len(resps) != 0 && len(resp.Kvs) > 0 {
+
+			if !firstRegattaCall && len(resp.Kvs) > 0 {
 				// remove the duplicated key due to paging
 				resp.Kvs = resp.Kvs[1:]
 				resp.Count--
 			}
-			resps = append(resps, resp)
+
+			if rangeLimit != 0 && total+resp.Count > rangeLimit {
+				// cut above limit
+				toRemove := int(total + resp.Count - rangeLimit)
+				resp.Kvs = resp.Kvs[:(len(resp.Kvs) - toRemove)]
+				resp.Count = int64(len(resp.Kvs))
+			}
+
 			total += resp.Count
-			if rangeLimit != 0 && total >= rangeLimit {
-				// we have enough data according to limit
+
+			if bufferAll {
+				resps = append(resps, resp)
+			} else {
+				results := make([]rangeCommandResult, 0)
+				for _, kv := range resp.Kvs {
+					results = append(results, rangeCommandResult{Key: getValue(kv.Key), Value: getValue(kv.Value)})
+				}
+				switch output {
+				case plainFormat:
+					plainPrint(cmd, results)
+				}
+			}
+
+			if rangeLimit != 0 && total == rangeLimit {
+				// we have enough data according to limit, no need to page
 				break
 			}
 			if resp.More {
 				// the same key will be included in next page
 				key = string(resp.Kvs[len(resp.Kvs)-1].Key)
+				firstRegattaCall = false
 			}
 		}
 
-		results := make([]rangeCommandResult, 0)
-		for _, resp := range resps {
-			for _, kv := range resp.Kvs {
-				results = append(results, rangeCommandResult{Key: getValue(kv.Key), Value: getValue(kv.Value)})
+		if bufferAll {
+			results := make([]rangeCommandResult, 0)
+			for _, resp := range resps {
+				for _, kv := range resp.Kvs {
+					results = append(results, rangeCommandResult{Key: getValue(kv.Key), Value: getValue(kv.Value)})
+				}
 			}
-		}
 
-		if rangeLimit != 0 {
-			results = results[:rangeLimit]
-		}
-
-		switch output {
-		case jsonFormat:
-			jsonPrint(cmd, results)
-		case plainFormat:
-			plainPrint(cmd, results)
+			switch output {
+			case jsonFormat:
+				jsonPrint(cmd, results)
+			}
 		}
 	},
 }
