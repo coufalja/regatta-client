@@ -23,7 +23,7 @@ or using Go tooling
 go install github.com/tantalor93/regatta-client
 ```
 
-Or you can download latest binary archive for your operating system and architecture [here](https://github.com/Tantalor93/regatta-client/releases/latest)
+or you can download the latest binary archive for your operating system and architecture [here](https://github.com/Tantalor93/regatta-client/releases/latest)
 
 ## Usage
 
@@ -52,63 +52,63 @@ Use "regatta-client [command] --help" for more information about a command.
 ```
 
 ## Examples
-### get all records in table
-this example retrieves all records in `example-table` table
+### Get all records in a table
+this example retrieves all records in the `example-table` table
 
 ```
 regatta-client range example-table --endpoint localhost:8443 --insecure
 ```
 
-### get all records in table without decoding keys/values to UTF-8 strings
-this example retrieves all records in `example-table` table without decoding binary data, this is achieved by using `--binary` flag. Retrieved key-value pairs are shown as Base64 strings
+### Get all records in a table without decoding keys/values to UTF-8 strings
+this example retrieves all records in the `example-table` table without decoding binary data, this is achieved by using `--binary` flag. Retrieved key-value pairs are shown as Base64 strings
 
 ```
 regatta-client range example-table --endpoint localhost:8443 --binary --insecure 
 ```
 
-### get record by key in table
-this example retrieves record with key `example-key` in `example-table` table
+### Get a record by a key in a table
+this example retrieves a record with the key `example-key` in the `example-table` table
 
 ```
 regatta-client range example-table example-key --endpoint localhost:8443 --insecure 
 ```
 
-### get all records with prefix in table
-this example retrieves all records with keys prefixed with `example` in `example-table` table. Note the asterisk, when doing prefix search! Without the asterisk, it is not a prefix search
+### Get all records with the given prefix in a table
+this example retrieves all records with keys prefixed with `example` in the `example-table` table. Note the asterisk, when doing a prefix search! Without the asterisk, it is not a prefix search
 
 ```
 regatta-client range example-table 'example*' --endpoint localhost:8443 --insecure 
 ```
 
-### delete record by key in table
-this example deletes record with key `example-key` in `example-table` table
+### Delete record by key in table
+this example deletes the record with key `example-key` in the `example-table` table
 
 ```
 regatta-client delete example-table example-key --endpoint localhost:8443 --insecure 
 ```
 
-### delete all records with given prefix in table 
-this example deletes all records with keys prefixed with `example` in `example-table` table. Note the asterisk, when doing prefix delete! Without the asterisk, it is not a prefix delete
+### Delete all records with the given prefix in a table 
+this example deletes all records with keys prefixed with `example` in the `example-table` table. Note the asterisk, when doing prefix delete! Without the asterisk, it is not a prefix delete
 
 ```
 regatta-client delete example-table 'example*' --endpoint localhost:8443 --insecure
 ```
 
-### delete all records in table
-this example deletes all records in `example-table` table 
+### Delete all records in a table
+this example deletes all records in the `example-table` table 
 
 ```
 regatta-client delete example-table '*' --endpoint localhost:8443 --insecure 
 ```
 
-### put data into the table
-this example inserts (or updates existing record with same key) into table `example-table` a record with key `example-key` and value `example-value`
+### Put data into the table
+this example inserts (or updates existing record with the same key) into table `example-table` a record with key `example-key` and value `example-value`
 
 ```
 regatta-client put example-table example-key example-value --endpoint localhost:8443 --insecure  
 ```
 
-### put binary data into table
+### Put binary data into a table
 to put binary data into Regatta using this tool, you need to encode the value using Base64 and use `--binary` flag, 
 for example this inserts into table `example-table` a record with key `example-key` and value `example-value`, where the value was
 provided encoded as Base64 string
