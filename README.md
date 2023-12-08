@@ -7,7 +7,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/tantalor93/regatta-client)](https://goreportcard.com/report/github.com/tantalor93/regatta-client)
 
 # regatta-client
-Unofficial CLI client for querying [Regatta store](https://github.com/jamf/regatta) 
+CLI client for querying [Regatta store](https://github.com/jamf/regatta) 
 
 ## Installation
 you can install **regatta-client** using [Homebrew](https://brew.sh/)
