@@ -60,7 +60,7 @@ regatta-client range example-table --endpoint localhost:8443 --insecure
 ```
 
 ### Get all records in a table without decoding keys/values to UTF-8 strings
-this example retrieves all records in the `example-table` table without decoding binary data, this is achieved by using `--binary` flag. Retrieved key-value pairs are shown as Base64 strings
+this example retrieves all records in the `example-table` table without decoding binary data, this is achieved by using the `--binary` flag. Retrieved key-value pairs are shown as Base64 strings
 
 ```
 regatta-client range example-table --endpoint localhost:8443 --binary --insecure 
@@ -80,8 +80,8 @@ this example retrieves all records with keys prefixed with `example` in the `exa
 regatta-client range example-table 'example*' --endpoint localhost:8443 --insecure 
 ```
 
-### Delete record by key in table
-this example deletes the record with key `example-key` in the `example-table` table
+### Delete record by key in a table
+this example deletes the record with the key `example-key` in the `example-table` table
 
 ```
 regatta-client delete example-table example-key --endpoint localhost:8443 --insecure 
@@ -101,7 +101,7 @@ this example deletes all records in the `example-table` table
 regatta-client delete example-table '*' --endpoint localhost:8443 --insecure 
 ```
 
-### Put data into the table
+### Put data into a table
 this example inserts (or updates existing record with the same key) into table `example-table` a record with key `example-key` and value `example-value`
 
 ```
@@ -109,10 +109,10 @@ regatta-client put example-table example-key example-value --endpoint localhost:
 ```
 
 ### Put binary data into a table
-to put binary data into Regatta using this tool, you need to encode the value using Base64 and use `--binary` flag, 
-for example this inserts into table `example-table` a record with key `example-key` and value `example-value`, where the value was
+to put binary data into Regatta using this tool, you need to encode the value using Base64 and use the `--binary` flag, 
+For example, this inserts into table `example-table` a record with key `example-key` and value `example-value`, where the value was
 provided encoded as Base64 string
 
 ```
-regatta-client put example-table example-key ZXhhbXBsZS12YWx1ZQ== --endpoint localhost:8443 --insecure --insecure
+regatta-client put example-table example-key ZXhhbXBsZS12YWx1ZQ== --endpoint localhost:8443 --insecure
 ```
