@@ -221,17 +221,17 @@ func Test_Range_Output(t *testing.T) {
 	}{
 		{
 			name:       "json output",
-			args:       []string{"--output", "json", "range", "table"},
-			wantStdOut: `[{"key":"test-key","value":"test-value"}]`,
+			args:       []string{"--output", "json", "range", "table", "--no-color"},
+			wantStdOut: `[{"key":"test-key1","value":"test-value1"},{"key":"test-key2","value":"test-value2"}]`,
 		},
 		{
 			name:       "plain output",
-			args:       []string{"--output", "plain", "range", "table"},
-			wantStdOut: `test-key: test-value`,
+			args:       []string{"--output", "plain", "range", "table", "--no-color"},
+			wantStdOut: "test-key1: test-value1\ntest-key2: test-value2",
 		},
 		{
 			name:       "invalid output",
-			args:       []string{"--output", "invalid", "range", "table"},
+			args:       []string{"--output", "invalid", "range", "table", "--no-color"},
 			wantStdErr: `Error: invalid argument "invalid" for "--output" flag: must be one of: plain, json`,
 		},
 	}
@@ -241,7 +241,55 @@ func Test_Range_Output(t *testing.T) {
 
 			mtbl := &mockTable{}
 			mtbl.On("Get", mock.Anything, string([]byte{0}), mock.Anything).
-				Return(&client.GetResponse{Kvs: []*client.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
+				Return(&client.GetResponse{Kvs: []*client.KeyValue{
+					{Key: []byte("test-key1"), Value: []byte("test-value1")},
+					{Key: []byte("test-key2"), Value: []byte("test-value2")}}}, nil)
+
+			mclient := &mockClient{}
+			regatta = mclient
+			mclient.On("Table", "table").Return(mtbl)
+
+			stdoutBuf := new(bytes.Buffer)
+			stderrBuf := new(bytes.Buffer)
+			RootCmd.SetOut(stdoutBuf)
+			RootCmd.SetErr(stderrBuf)
+
+			RootCmd.SetArgs(tt.args)
+			RootCmd.Execute()
+
+			assert.Equal(t, tt.wantStdOut, strings.TrimSpace(stdoutBuf.String()))
+			assert.Equal(t, tt.wantStdErr, strings.TrimSpace(stderrBuf.String()))
+		})
+	}
+}
+
+func Test_Range_Values_Only(t *testing.T) {
+	tests := []struct {
+		name       string
+		args       []string
+		wantStdOut string
+		wantStdErr string
+	}{
+		{
+			name:       "json output",
+			args:       []string{"--output", "json", "range", "table", "--no-color", "--values-only"},
+			wantStdOut: `[{"value":"test-value1"},{"value":"test-value2"}]`,
+		},
+		{
+			name:       "plain output",
+			args:       []string{"--output", "plain", "range", "table", "--no-color", "--values-only"},
+			wantStdOut: "test-value1\ntest-value2",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			resetRangeFlags()
+
+			mtbl := &mockTable{}
+			mtbl.On("Get", mock.Anything, string([]byte{0}), mock.Anything).
+				Return(&client.GetResponse{Kvs: []*client.KeyValue{
+					{Key: []byte("test-key1"), Value: []byte("test-value1")},
+					{Key: []byte("test-key2"), Value: []byte("test-value2")}}}, nil)
 
 			mclient := &mockClient{}
 			regatta = mclient

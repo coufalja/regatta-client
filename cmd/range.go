@@ -12,9 +12,10 @@ import (
 )
 
 var (
-	rangeBinary bool
-	rangeLimit  int64
-	output      = plainFormat
+	rangeBinary     bool
+	rangeLimit      int64
+	rangeOutput     = plainFormat
+	rangeValuesOnly bool
 
 	zero = string([]byte{0})
 )
@@ -22,8 +23,9 @@ var (
 func init() {
 	Range.Flags().BoolVar(&rangeBinary, "binary", false, "avoid decoding keys and values into UTF-8 strings, but rather encode them as Base64 strings")
 	Range.Flags().Int64Var(&rangeLimit, "limit", 0, "limit number of returned items. Zero is no limit")
-	Range.Flags().Var(&output, "output", "configure output format. Currently plain and json is supported")
+	Range.Flags().Var(&rangeOutput, "output", "configure output format. Currently plain and json is supported")
 	Range.RegisterFlagCompletionFunc("output", outputFormatCompletion)
+	Range.Flags().BoolVar(&rangeValuesOnly, "values-only", false, "return only values")
 }
 
 // Range is a subcommand used for retrieving records from a table.
@@ -57,7 +59,7 @@ var Range = cobra.Command{
 		var resps []*client.GetResponse
 		var err error
 		firstRegattaCall := true
-		bufferAll := output == jsonFormat
+		bufferAll := rangeOutput == jsonFormat
 
 		var total int64
 
@@ -84,15 +86,13 @@ var Range = cobra.Command{
 			total += resp.Count
 
 			if bufferAll {
+				// collect all responses and print when we have everything
 				resps = append(resps, resp)
 			} else {
-				results := make([]rangeCommandResult, 0)
-				for _, kv := range resp.Kvs {
-					results = append(results, rangeCommandResult{Key: getValue(kv.Key), Value: getValue(kv.Value)})
-				}
-				switch output {
+				// print while paging
+				switch rangeOutput {
 				case plainFormat:
-					plainPrint(cmd, results)
+					plainPrint(cmd, resp)
 				}
 			}
 
@@ -108,37 +108,45 @@ var Range = cobra.Command{
 		}
 
 		if bufferAll {
-			results := make([]rangeCommandResult, 0)
-			for _, resp := range resps {
-				for _, kv := range resp.Kvs {
-					results = append(results, rangeCommandResult{Key: getValue(kv.Key), Value: getValue(kv.Value)})
-				}
-			}
-
-			switch output {
+			switch rangeOutput {
 			case jsonFormat:
-				jsonPrint(cmd, results)
+				jsonPrint(cmd, resps)
 			}
 		}
 	},
 }
 
-func jsonPrint(cmd *cobra.Command, result []rangeCommandResult) {
-	marshal, _ := json.Marshal(result)
+type rangeCommandResult struct {
+	Key   string `json:"key,omitempty"`
+	Value string `json:"value"`
+}
+
+func jsonPrint(cmd *cobra.Command, resps []*client.GetResponse) {
+	results := make([]rangeCommandResult, 0)
+	for _, resp := range resps {
+		for _, kv := range resp.Kvs {
+			key := getValue(kv.Key)
+			if rangeValuesOnly {
+				key = ""
+			}
+			results = append(results, rangeCommandResult{Key: key, Value: getValue(kv.Value)})
+		}
+	}
+
+	marshal, _ := json.Marshal(results)
 	cmd.Println(string(marshal))
 }
 
-func plainPrint(cmd *cobra.Command, result []rangeCommandResult) {
-	for _, v := range result {
-		key := color.New(color.FgBlue).Sprint(v.Key)
-		value := color.New(color.FgGreen).Sprint(v.Value)
-		cmd.Println(key + ": " + value)
+func plainPrint(cmd *cobra.Command, resp *client.GetResponse) {
+	for _, kv := range resp.Kvs {
+		key := color.New(color.FgBlue).Sprint(getValue(kv.Key))
+		value := color.New(color.FgGreen).Sprint(getValue(kv.Value))
+		if rangeValuesOnly {
+			cmd.Println(value)
+		} else {
+			cmd.Println(key + ": " + value)
+		}
 	}
-}
-
-type rangeCommandResult struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
 }
 
 func keyAndOptsForRange(args []string) (string, []client.OpOption) {
