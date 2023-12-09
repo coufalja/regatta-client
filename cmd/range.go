@@ -93,6 +93,8 @@ var Range = cobra.Command{
 				switch rangeOutput {
 				case plainFormat:
 					plainPrint(cmd, resp)
+				case jsonLineFormat:
+					jsonLinePrint(cmd, resp)
 				}
 			}
 
@@ -146,6 +148,18 @@ func plainPrint(cmd *cobra.Command, resp *client.GetResponse) {
 		} else {
 			cmd.Println(key + ": " + value)
 		}
+	}
+}
+
+func jsonLinePrint(cmd *cobra.Command, resp *client.GetResponse) {
+	for _, kv := range resp.Kvs {
+		key := getValue(kv.Key)
+		if rangeValuesOnly {
+			key = ""
+		}
+		res := rangeCommandResult{Key: key, Value: getValue(kv.Value)}
+		marshal, _ := json.Marshal(res)
+		cmd.Println(string(marshal))
 	}
 }
 
