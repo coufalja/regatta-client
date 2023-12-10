@@ -21,15 +21,15 @@ var (
 )
 
 func init() {
-	Range.Flags().BoolVar(&rangeBinary, "binary", false, "avoid decoding keys and values into UTF-8 strings, but rather encode them as Base64 strings")
-	Range.Flags().Int64Var(&rangeLimit, "limit", 0, "limit number of returned items. Zero is no limit")
-	Range.Flags().Var(&rangeOutput, "output", "configure output format. Currently plain and json is supported")
-	Range.RegisterFlagCompletionFunc("output", outputFormatCompletion)
-	Range.Flags().BoolVar(&rangeValuesOnly, "values-only", false, "return only values")
+	RangeCmd.Flags().BoolVar(&rangeBinary, "binary", false, "avoid decoding keys and values into UTF-8 strings, but rather encode them as Base64 strings")
+	RangeCmd.Flags().Int64Var(&rangeLimit, "limit", 0, "limit number of returned items. Zero is no limit")
+	RangeCmd.Flags().Var(&rangeOutput, "output", "configure output format. Currently plain and json is supported")
+	RangeCmd.RegisterFlagCompletionFunc("output", outputFormatCompletion)
+	RangeCmd.Flags().BoolVar(&rangeValuesOnly, "values-only", false, "return only values")
 }
 
-// Range is a subcommand used for retrieving records from a table.
-var Range = cobra.Command{
+// RangeCmd is a subcommand used for retrieving records from a table.
+var RangeCmd = cobra.Command{
 	Use:   "range <table> [key]",
 	Short: "Retrieve data from Regatta store",
 	Long: "Retrieves data from Regatta store using Range query as defined in API (https://engineering.jamf.com/regatta/api/#range).\n" +

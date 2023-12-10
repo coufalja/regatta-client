@@ -9,8 +9,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Delete is a subcommand used for deleting records in a table.
-var Delete = cobra.Command{
+// DeleteCmd is a subcommand used for deleting records in a table.
+var DeleteCmd = cobra.Command{
 	Use:   "delete <table> <key>",
 	Short: "Delete data from Regatta store",
 	Long: "Deletes data from Regatta store using DeleteRange query as defined in API (https://engineering.jamf.com/regatta/api/#deleterange).\n" +

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"os"
 	"runtime/debug"
 	"time"
@@ -17,6 +18,7 @@ var regatta tableClient
 
 type tableClient interface {
 	Table(string) client.Table
+	Status(ctx context.Context, endpoint string) (*client.StatusResponse, error)
 }
 
 // RootCmd is a root command for all the subcommands of regatta-client.
@@ -44,7 +46,7 @@ var (
 
 func init() {
 	// register common flags directly to the subcommands
-	for _, c := range []*cobra.Command{&Range, &Delete, &Put} {
+	for _, c := range []*cobra.Command{&RangeCmd, &DeleteCmd, &PutCmd, &VersionCmd} {
 		c.Flags().StringVar(&endpointOption, "endpoint", "localhost:8443", "Regatta API endpoint")
 		c.Flags().BoolVar(&insecureOption, "insecure", false, "allow insecure connection, controls whether certificates are validated")
 		c.Flags().StringVar(&certOption, "cert", "", "Regatta CA cert")
@@ -54,12 +56,14 @@ func init() {
 
 	RootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "disable color output")
 
-	RootCmd.AddCommand(&Range)
-	RootCmd.AddCommand(&Delete)
-	RootCmd.AddCommand(&Put)
-	RootCmd.AddCommand(&Man)
+	RootCmd.AddCommand(&RangeCmd)
+	RootCmd.AddCommand(&DeleteCmd)
+	RootCmd.AddCommand(&PutCmd)
+	RootCmd.AddCommand(&ManCmd)
+	RootCmd.AddCommand(&VersionCmd)
 
 	RootCmd.SetOut(os.Stdout)
+	RootCmd.SetErr(&coloredErrWriter{os.Stderr})
 
 	info, ok := debug.ReadBuildInfo()
 	if ok && len(Version) == 0 {
