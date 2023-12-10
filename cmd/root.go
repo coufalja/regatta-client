@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"runtime/debug"
 	"time"
 
 	"github.com/fatih/color"
@@ -10,7 +11,7 @@ import (
 )
 
 // Version is set during release of project.
-var Version = "unknown"
+var Version string
 
 var regatta tableClient
 
@@ -59,6 +60,11 @@ func init() {
 	RootCmd.AddCommand(&Man)
 
 	RootCmd.SetOut(os.Stdout)
+
+	info, ok := debug.ReadBuildInfo()
+	if ok && len(Version) == 0 {
+		RootCmd.Version = info.Main.Version
+	}
 }
 
 // Execute executes root command of regatta-client.
