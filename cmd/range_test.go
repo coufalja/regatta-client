@@ -225,6 +225,11 @@ func Test_Range_Output(t *testing.T) {
 			wantStdOut: `[{"key":"test-key1","value":"test-value1"},{"key":"test-key2","value":"test-value2"}]`,
 		},
 		{
+			name:       "jsonl output",
+			args:       []string{"--output", "jsonl", "range", "table", "--no-color"},
+			wantStdOut: "{\"key\":\"test-key1\",\"value\":\"test-value1\"}\n{\"key\":\"test-key2\",\"value\":\"test-value2\"}",
+		},
+		{
 			name:       "plain output",
 			args:       []string{"--output", "plain", "range", "table", "--no-color"},
 			wantStdOut: "test-key1: test-value1\ntest-key2: test-value2",
@@ -232,7 +237,7 @@ func Test_Range_Output(t *testing.T) {
 		{
 			name:       "invalid output",
 			args:       []string{"--output", "invalid", "range", "table", "--no-color"},
-			wantStdErr: `Error: invalid argument "invalid" for "--output" flag: must be one of: plain, json`,
+			wantStdErr: `Error: invalid argument "invalid" for "--output" flag: must be one of: plain, json, jsonl`,
 		},
 	}
 	for _, tt := range tests {
@@ -274,6 +279,11 @@ func Test_Range_Values_Only(t *testing.T) {
 			name:       "json output",
 			args:       []string{"--output", "json", "range", "table", "--no-color", "--values-only"},
 			wantStdOut: `[{"value":"test-value1"},{"value":"test-value2"}]`,
+		},
+		{
+			name:       "jsonl output",
+			args:       []string{"--output", "jsonl", "range", "table", "--no-color", "--values-only"},
+			wantStdOut: "{\"value\":\"test-value1\"}\n{\"value\":\"test-value2\"}",
 		},
 		{
 			name:       "plain output",
