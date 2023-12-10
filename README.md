@@ -20,7 +20,7 @@ brew install regatta-client
 or using Go tooling 
 
 ```
-go install github.com/tantalor93/regatta-client
+go install github.com/tantalor93/regatta-client@latest
 ```
 
 or you can download the latest binary archive for your operating system and architecture [here](https://github.com/Tantalor93/regatta-client/releases/latest)
