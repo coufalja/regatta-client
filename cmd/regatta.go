@@ -1,13 +1,15 @@
 package cmd
 
 import (
+	"fmt"
+
 	client "github.com/jamf/regatta-go"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func connect(cmd *cobra.Command, _ []string) error {
+func connect(_ *cobra.Command, _ []string) error {
 	// Allow for mocking in tests.
 	if regatta == nil {
 		cl, err := client.New(
@@ -18,8 +20,7 @@ func connect(cmd *cobra.Command, _ []string) error {
 			client.WithSecureConfig(&client.SecureConfig{Cacert: certOption, InsecureSkipVerify: insecureOption}),
 		)
 		if err != nil {
-			cmd.PrintErrln("There was an error, while establishing connection to Regatta.")
-			return err
+			return fmt.Errorf("unable to establish connection to the Regatta: %w", err)
 		}
 		regatta = cl
 	}

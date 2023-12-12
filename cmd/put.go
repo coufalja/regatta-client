@@ -10,11 +10,11 @@ import (
 var putBinary bool
 
 func init() {
-	Put.Flags().BoolVar(&putBinary, "binary", false, "provided <value> is binary data encoded using Base64")
+	PutCmd.Flags().BoolVar(&putBinary, "binary", false, "provided <value> is binary data encoded using Base64")
 }
 
-// Put is a subcommand used for creating/updating records in a table.
-var Put = cobra.Command{
+// PutCmd is a subcommand used for creating/updating records in a table.
+var PutCmd = cobra.Command{
 	Use:     "put <table> <key> <value>",
 	Short:   "Put data into Regatta store",
 	Long:    "Put data into Regatta store using Put query as defined in API (https://engineering.jamf.com/regatta/api/#put).",

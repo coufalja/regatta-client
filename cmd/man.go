@@ -5,8 +5,8 @@ import (
 	"github.com/spf13/cobra/doc"
 )
 
-// Man is a subcommand used for printing man pages.
-var Man = cobra.Command{
+// ManCmd is a subcommand used for printing man pages.
+var ManCmd = cobra.Command{
 	Use:     "man",
 	Short:   "Generates man pages",
 	Example: "regatta-client man .",

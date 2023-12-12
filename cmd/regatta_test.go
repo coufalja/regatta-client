@@ -86,3 +86,8 @@ func (m *mockClient) Table(table string) client.Table {
 	called := m.Called(table)
 	return called.Get(0).(*mockTable)
 }
+
+func (m *mockClient) Status(ctx context.Context, endpoint string) (*client.StatusResponse, error) {
+	args := m.Called(ctx, endpoint)
+	return args.Get(0).(*client.StatusResponse), args.Error(1)
+}
