@@ -46,7 +46,7 @@ var (
 
 func init() {
 	// register common flags directly to the subcommands
-	for _, c := range []*cobra.Command{&RangeCmd, &DeleteCmd, &PutCmd, &VersionCmd} {
+	for _, c := range []*cobra.Command{&RangeCmd, &DeleteCmd, &PutCmd, &VersionCmd, &TableCmd} {
 		c.Flags().StringVar(&endpointOption, "endpoint", "localhost:8443", "Regatta API endpoint")
 		c.Flags().BoolVar(&insecureOption, "insecure", false, "allow insecure connection, controls whether certificates are validated")
 		c.Flags().StringVar(&certOption, "cert", "", "Regatta CA cert")
@@ -61,6 +61,7 @@ func init() {
 	RootCmd.AddCommand(&PutCmd)
 	RootCmd.AddCommand(&ManCmd)
 	RootCmd.AddCommand(&VersionCmd)
+	RootCmd.AddCommand(&TableCmd)
 
 	RootCmd.SetOut(os.Stdout)
 	RootCmd.SetErr(&coloredErrWriter{os.Stderr})
