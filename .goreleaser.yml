@@ -38,3 +38,12 @@ brews:
     bash_completion.install "completions/regatta-client.bash" => "_regatta-client"
     zsh_completion.install "completions/regatta-client.zsh" => "_regatta-client"
     man1.install Dir["manpages/*.1"]
+dockers:
+- use: docker
+  id: regatta-client
+  dockerfile: "Dockerfile-goreleaser"
+  image_templates:
+  - "ghcr.io/tantalor93/regatta-client:{{ .Tag }}"
+  - "ghcr.io/tantalor93/regatta-client:v{{ .Major }}"
+  - "ghcr.io/tantalor93/regatta-client:v{{ .Major }}.{{ .Minor }}"
+  - "ghcr.io/tantalor93/regatta-client:latest"
