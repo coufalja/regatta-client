@@ -25,6 +25,13 @@ go install github.com/tantalor93/regatta-client@latest
 
 or you can download the latest binary archive for your operating system and architecture [here](https://github.com/Tantalor93/regatta-client/releases/latest)
 
+## Docker
+you can also run **regatta-client** in a Docker container using provided [image](https://github.com/Tantalor93/regatta-client/pkgs/container/regatta-client)
+
+```
+docker run ghcr.io/tantalor93/regatta-client --version
+```
+
 ## Usage
 
 ```
@@ -38,20 +45,36 @@ Available Commands:
   completion  Generate the autocompletion script for the specified shell
   delete      Delete data from Regatta store
   help        Help about any command
+  man         Generates man pages
   put         Put data into Regatta store
   range       Retrieve data from Regatta store
+  table       Print available tables
+  version     Get current version of regatta-client and a Regatta server
 
 Flags:
-      --cert string       regatta CA cert
-      --endpoint string   regatta API endpoint (default "localhost:8443")
-  -h, --help              help for regatta-client
-      --insecure          allow insecure connection, controls whether certificates are validated
-  -v, --version           version for regatta-client
+  -h, --help       help for regatta-client
+      --no-color   disable color output
+  -v, --version    version for regatta-client
 
 Use "regatta-client [command] --help" for more information about a command.
 ```
 
 ## Examples
+
+### Get all tables
+this example retrieves all available table in the Regatta
+
+```
+regatta-client table --endpoint localhost:8443 --insecure
+```
+
+### Get client and server version
+this example prints client and server version
+
+```
+regatta-client version --endpoint localhost:8443 --insecure
+```
+
 ### Get all records in a table
 this example retrieves all records in the `example-table` table
 
