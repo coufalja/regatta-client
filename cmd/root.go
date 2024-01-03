@@ -45,16 +45,12 @@ var (
 )
 
 func init() {
-	// register common flags directly to the subcommands
-	for _, c := range []*cobra.Command{&RangeCmd, &DeleteCmd, &PutCmd, &VersionCmd, &TableCmd} {
-		c.Flags().StringVar(&endpointOption, "endpoint", "localhost:8443", "Regatta API endpoint")
-		c.Flags().BoolVar(&insecureOption, "insecure", false, "allow insecure connection, controls whether certificates are validated")
-		c.Flags().StringVar(&certOption, "cert", "", "Regatta CA cert")
-		c.Flags().DurationVar(&timeout, "timeout", 10*time.Second, "timeout for the Regatta operation")
-		c.Flags().DurationVar(&dialTimeout, "dial-timeout", 2*time.Second, "timeout for establishing the connection to the Regatta")
-	}
-
 	RootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "disable color output")
+	RootCmd.PersistentFlags().StringVar(&endpointOption, "endpoint", "localhost:8443", "Regatta API endpoint")
+	RootCmd.PersistentFlags().BoolVar(&insecureOption, "insecure", false, "allow insecure connection, controls whether certificates are validated")
+	RootCmd.PersistentFlags().StringVar(&certOption, "cert", "", "Regatta CA cert")
+	RootCmd.PersistentFlags().DurationVar(&timeout, "timeout", 10*time.Second, "timeout for the Regatta operation")
+	RootCmd.PersistentFlags().DurationVar(&dialTimeout, "dial-timeout", 2*time.Second, "timeout for establishing the connection to the Regatta")
 
 	RootCmd.AddCommand(&RangeCmd)
 	RootCmd.AddCommand(&DeleteCmd)

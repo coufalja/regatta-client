@@ -52,9 +52,14 @@ Available Commands:
   version     Get current version of regatta-client and a Regatta server
 
 Flags:
-  -h, --help       help for regatta-client
-      --no-color   disable color output
-  -v, --version    version for regatta-client
+      --cert string             Regatta CA cert
+      --dial-timeout duration   timeout for establishing the connection to the Regatta (default 2s)
+      --endpoint string         Regatta API endpoint (default "localhost:8443")
+  -h, --help                    help for regatta-client
+      --insecure                allow insecure connection, controls whether certificates are validated
+      --no-color                disable color output
+      --timeout duration        timeout for the Regatta operation (default 10s)
+  -v, --version                 version for regatta-client
 
 Use "regatta-client [command] --help" for more information about a command.
 ```
