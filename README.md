@@ -67,14 +67,14 @@ Use "regatta-client [command] --help" for more information about a command.
 ## Examples
 
 ### Get all tables
-this example retrieves all available table in the Regatta
+this example retrieves all available tables in the Regatta store
 
 ```
 regatta-client table
 ```
 
 ### Get client and server version
-this example prints client and server version
+this example prints client and Regatta server version
 
 ```
 regatta-client version
