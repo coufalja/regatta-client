@@ -70,70 +70,70 @@ Use "regatta-client [command] --help" for more information about a command.
 this example retrieves all available table in the Regatta
 
 ```
-regatta-client table --endpoint localhost:8443 --insecure
+regatta-client table
 ```
 
 ### Get client and server version
 this example prints client and server version
 
 ```
-regatta-client version --endpoint localhost:8443 --insecure
+regatta-client version
 ```
 
 ### Get all records in a table
 this example retrieves all records in the `example-table` table
 
 ```
-regatta-client range example-table --endpoint localhost:8443 --insecure
+regatta-client range example-table
 ```
 
 ### Get all records in a table without decoding keys/values to UTF-8 strings
 this example retrieves all records in the `example-table` table without decoding binary data, this is achieved by using the `--binary` flag. Retrieved key-value pairs are shown as Base64 strings
 
 ```
-regatta-client range example-table --endpoint localhost:8443 --binary --insecure 
+regatta-client range example-table --binary 
 ```
 
 ### Get a record by a key in a table
 this example retrieves a record with the key `example-key` in the `example-table` table
 
 ```
-regatta-client range example-table example-key --endpoint localhost:8443 --insecure 
+regatta-client range example-table example-key
 ```
 
 ### Get all records with the given prefix in a table
 this example retrieves all records with keys prefixed with `example` in the `example-table` table. Note the asterisk, when doing a prefix search! Without the asterisk, it is not a prefix search
 
 ```
-regatta-client range example-table 'example*' --endpoint localhost:8443 --insecure 
+regatta-client range example-table 'example*'
 ```
 
 ### Delete record by key in a table
 this example deletes the record with the key `example-key` in the `example-table` table
 
 ```
-regatta-client delete example-table example-key --endpoint localhost:8443 --insecure 
+regatta-client delete example-table example-key
 ```
 
 ### Delete all records with the given prefix in a table 
 this example deletes all records with keys prefixed with `example` in the `example-table` table. Note the asterisk, when doing prefix delete! Without the asterisk, it is not a prefix delete
 
 ```
-regatta-client delete example-table 'example*' --endpoint localhost:8443 --insecure
+regatta-client delete example-table 'example*'
 ```
 
 ### Delete all records in a table
 this example deletes all records in the `example-table` table 
 
 ```
-regatta-client delete example-table '*' --endpoint localhost:8443 --insecure 
+regatta-client delete example-table '*'
 ```
 
 ### Put data into a table
 this example inserts (or updates existing record with the same key) into table `example-table` a record with key `example-key` and value `example-value`
 
 ```
-regatta-client put example-table example-key example-value --endpoint localhost:8443 --insecure  
+regatta-client put example-table example-key example-value
 ```
 
 ### Put binary data into a table
@@ -142,5 +142,5 @@ For example, this inserts into table `example-table` a record with key `example-
 provided encoded as Base64 string
 
 ```
-regatta-client put example-table example-key ZXhhbXBsZS12YWx1ZQ== --endpoint localhost:8443 --insecure
+regatta-client put example-table example-key ZXhhbXBsZS12YWx1ZQ== --binary
 ```
