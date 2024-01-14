@@ -28,7 +28,7 @@ snapshot:
 changelog:
   sort: asc
 brews:
-- tap:
+- repository:
     owner: tantalor93
     name: homebrew-regatta-client
   folder: Formula
@@ -40,7 +40,9 @@ brews:
     man1.install Dir["manpages/*.1"]
 nfpms:
 - package_name: regatta-client
-  maintainer: Tantalor93 <obenky@gmail.com>
+  maintainer: Ondřej Benkovský <obenky@gmail.com>
+  description: |-
+    CLI client for Regatta store
   license: MIT
   formats:
   - apk
@@ -55,3 +57,14 @@ dockers:
   - "ghcr.io/tantalor93/regatta-client:v{{ .Major }}"
   - "ghcr.io/tantalor93/regatta-client:v{{ .Major }}.{{ .Minor }}"
   - "ghcr.io/tantalor93/regatta-client:latest"
+  build_flag_templates:
+  - "--label=org.opencontainers.image.created={{.Date}}"
+  - "--label=org.opencontainers.image.authors=Ondřej Benkovský <obenky@gmail.com>"
+  - "--label=org.opencontainers.image.url=https://github.com/Tantalor93/regatta-client"
+  - "--label=org.opencontainers.image.documentation=https://github.com/Tantalor93/regatta-client"
+  - "--label=org.opencontainers.image.source=https://github.com/Tantalor93/regatta-client"
+  - "--label=org.opencontainers.image.version={{.Version}}"
+  - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+  - "--label=org.opencontainers.image.licenses=MIT"
+  - "--label=org.opencontainers.image.title={{.ProjectName}}"
+  - "--label=org.opencontainers.image.description=CLI client for Regatta store"
