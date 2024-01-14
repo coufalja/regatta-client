@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Tantalor93](https://circleci.com/gh/Tantalor93/regatta-client/tree/main.svg?style=svg)](https://circleci.com/gh/Tantalor93/regatta-client?branch=main)
 [![lint](https://github.com/Tantalor93/regatta-client/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/Tantalor93/regatta-client/actions/workflows/lint.yml)
+[![goreleaser-check](https://github.com/Tantalor93/regatta-client/actions/workflows/goreleaser-check.yml/badge.svg?branch=main)](https://github.com/Tantalor93/regatta-client/actions/workflows/goreleaser-check.yml)
 [![codecov](https://codecov.io/gh/Tantalor93/regatta-client/branch/main/graph/badge.svg?token=V47TUVZKNF)](https://codecov.io/gh/Tantalor93/regatta-client)
 [![Go Report Card](https://goreportcard.com/badge/github.com/tantalor93/regatta-client)](https://goreportcard.com/report/github.com/tantalor93/regatta-client)
 

@@ -2,7 +2,6 @@ FROM alpine:latest as certs
 RUN apk --update add ca-certificates
 
 FROM scratch
-LABEL org.opencontainers.image.source=https://github.com/tantalor93/regatta-client
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY regatta-client /regatta-client
 ENTRYPOINT ["/regatta-client"]
