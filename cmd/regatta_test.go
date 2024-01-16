@@ -72,6 +72,11 @@ func (m *mockTable) Get(ctx context.Context, key string, opts ...client.OpOption
 	return args.Get(0).(*client.GetResponse), args.Error(1)
 }
 
+func (m *mockTable) Iterate(ctx context.Context, key string, opts ...client.OpOption) (client.IteratorResponse, error) {
+	args := m.Called(ctx, key, opts)
+	return args.Get(0).(client.IteratorResponse), args.Error(1)
+}
+
 func (m *mockTable) Delete(ctx context.Context, key string, opts ...client.OpOption) (*client.DeleteResponse, error) {
 	args := m.Called(ctx, key, opts)
 	return args.Get(0).(*client.DeleteResponse), args.Error(1)

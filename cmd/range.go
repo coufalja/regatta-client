@@ -58,33 +58,20 @@ var RangeCmd = cobra.Command{
 
 		var resps []*client.GetResponse
 		var err error
-		firstRegattaCall := true
 		bufferAll := rangeOutput == jsonFormat
-
 		var total int64
+		iterator, err := regatta.Table(args[0]).Iterate(ctx, key, opts...)
+		if err != nil {
+			handleRegattaError(cmd, err)
+			return
+		}
 
-		for resp := (*client.GetResponse)(nil); resp == nil || resp.More; {
-			resp, err = regatta.Table(args[0]).Get(ctx, key, opts...)
+		iterator(func(resp *client.GetResponse, err error) bool {
 			if err != nil {
 				handleRegattaError(cmd, err)
-				return
+				return false
 			}
-
-			if !firstRegattaCall && len(resp.Kvs) > 0 {
-				// remove the duplicated key due to paging
-				resp.Kvs = resp.Kvs[1:]
-				resp.Count--
-			}
-
-			if rangeLimit != 0 && total+resp.Count > rangeLimit {
-				// cut above limit
-				toRemove := int(total + resp.Count - rangeLimit)
-				resp.Kvs = resp.Kvs[:(len(resp.Kvs) - toRemove)]
-				resp.Count = int64(len(resp.Kvs))
-			}
-
 			total += resp.Count
-
 			if bufferAll {
 				// collect all responses and print when we have everything
 				resps = append(resps, resp)
@@ -97,17 +84,8 @@ var RangeCmd = cobra.Command{
 					jsonLinePrint(cmd, resp)
 				}
 			}
-
-			if rangeLimit != 0 && total == rangeLimit {
-				// we have enough data according to limit, no need to page
-				break
-			}
-			if resp.More {
-				// the same key will be included in next page
-				key = string(resp.Kvs[len(resp.Kvs)-1].Key)
-				firstRegattaCall = false
-			}
-		}
+			return true
+		})
 
 		if bufferAll {
 			switch rangeOutput {
