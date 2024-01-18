@@ -35,33 +35,28 @@ var DeleteCmd = cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx, cancel := context.WithTimeout(cmd.Context(), timeout)
 		defer cancel()
-		key, opts, isRange := keyAndOptsForDelete(args)
+		key, opts := keyAndOptsForDelete(args)
 		resp, err := regatta.Table(args[0]).Delete(ctx, key, opts...)
 		if err != nil {
 			handleRegattaError(cmd, err)
 			return
 		}
-
-		if isRange {
-			// print count only when doing range deletes, deleting single key always returns Deleted=1 even when nothing is deleted,
-			// which is misleading and wrong (probably it is Regatta bug)
-			count := color.New(color.FgBlue).Sprint(resp.Deleted)
-			cmd.Println(count)
-		}
+		count := color.New(color.FgBlue).Sprint(resp.Deleted)
+		cmd.Println(count)
 	},
 }
 
-func keyAndOptsForDelete(args []string) (key string, opts []client.OpOption, isRange bool) {
-	key = args[1]
+func keyAndOptsForDelete(args []string) (string, []client.OpOption) {
+	key := args[1]
 	if strings.HasSuffix(key, "*") {
 		key = strings.TrimSuffix(key, "*")
 		if len(key) == 0 {
 			// delete all
-			return zero, []client.OpOption{client.WithRange(zero), client.WithCount()}, true
+			return zero, []client.OpOption{client.WithRange(zero), client.WithCount()}
 		}
 		// delete by prefix
-		return key, []client.OpOption{client.WithPrefix(), client.WithCount()}, true
+		return key, []client.OpOption{client.WithPrefix(), client.WithCount()}
 	}
 	// delete single
-	return key, []client.OpOption{client.WithCount()}, false
+	return key, []client.OpOption{client.WithCount()}
 }
