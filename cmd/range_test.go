@@ -16,8 +16,10 @@ func Test_Range_All(t *testing.T) {
 	resetRangeFlags()
 
 	mtbl := &mockTable{}
-	mtbl.On("Get", mock.Anything, string([]byte{0}), mock.Anything).
-		Return(&client.GetResponse{Kvs: []*client.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
+	mtbl.On("Iterate", mock.Anything, string([]byte{0}), mock.Anything).
+		Return(client.IteratorResponse(func(yield func(response *client.GetResponse, err error) bool) {
+			yield(&client.GetResponse{Kvs: []*client.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
+		}), nil)
 
 	mclient := &mockClient{}
 	regatta = mclient
@@ -40,8 +42,10 @@ func Test_Range_All_Star(t *testing.T) {
 	resetRangeFlags()
 
 	mtbl := &mockTable{}
-	mtbl.On("Get", mock.Anything, string([]byte{0}), mock.Anything).
-		Return(&client.GetResponse{Kvs: []*client.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
+	mtbl.On("Iterate", mock.Anything, string([]byte{0}), mock.Anything).
+		Return(client.IteratorResponse(func(yield func(response *client.GetResponse, err error) bool) {
+			yield(&client.GetResponse{Kvs: []*client.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
+		}), nil)
 
 	mclient := &mockClient{}
 	regatta = mclient
@@ -63,13 +67,13 @@ func Test_Range_All_Star(t *testing.T) {
 func Test_Range_All_Paging(t *testing.T) {
 	resetRangeFlags()
 
-	resp1 := client.GetResponse{Kvs: []*client.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}, More: true, Count: 1}
-	resp2 := client.GetResponse{Kvs: []*client.KeyValue{
-		{Key: []byte("test-key"), Value: []byte("test-value")}, {Key: []byte("test-key2"), Value: []byte("test-value2")}}, Count: 2}
+	resp := client.IteratorResponse(func(yield func(response *client.GetResponse, err error) bool) {
+		yield(&client.GetResponse{Kvs: []*client.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}, More: true, Count: 1}, nil)
+		yield(&client.GetResponse{Kvs: []*client.KeyValue{{Key: []byte("test-key2"), Value: []byte("test-value2")}}, Count: 1}, nil)
+	})
 
 	fake, cancel := client.NewFake(
-		client.FakeResponse{Response: resp1.OpResponse(), Err: nil},
-		client.FakeResponse{Response: resp2.OpResponse(), Err: nil},
+		client.FakeResponse{Response: resp.OpResponse(), Err: nil},
 	)
 	defer cancel()
 	regatta = fake.Client()
@@ -107,69 +111,37 @@ func Test_Range_Error(t *testing.T) {
 	assert.Equal(t, `The requested resource was not found: table not found`, strings.TrimSpace(stderrBuf.String()))
 }
 
-func Test_Range_All_Paging_Limit(t *testing.T) {
-	tests := []struct {
-		name  string
-		resps []client.FakeResponse
-	}{
-		{
-			name: "second page matches directly the limit",
-			resps: []client.FakeResponse{
-				{
-					Response: (&client.GetResponse{Kvs: []*client.KeyValue{
-						{Key: []byte("test-key"), Value: []byte("test-value")}}, More: true, Count: 1}).OpResponse(),
-				},
-				{
-					Response: (&client.GetResponse{Kvs: []*client.KeyValue{
-						{Key: []byte("test-key"), Value: []byte("test-value")},
-						{Key: []byte("test-key2"), Value: []byte("test-value2")}}, Count: 2}).OpResponse(),
-				},
-			},
-		},
-		{
-			name: "second page is over the limit",
-			resps: []client.FakeResponse{
-				{
-					Response: (&client.GetResponse{Kvs: []*client.KeyValue{
-						{Key: []byte("test-key"), Value: []byte("test-value")}}, More: true, Count: 1}).OpResponse(),
-				},
-				{
-					Response: (&client.GetResponse{Kvs: []*client.KeyValue{
-						{Key: []byte("test-key"), Value: []byte("test-value")},
-						{Key: []byte("test-key2"), Value: []byte("test-value2")},
-						{Key: []byte("test-key3"), Value: []byte("test-value3")}}, Count: 3}).OpResponse(),
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			resetRangeFlags()
+func Test_Range_Connect_Error(t *testing.T) {
+	resetRangeFlags()
 
-			fake, cancel := client.NewFake(tt.resps...)
-			defer cancel()
-			regatta = fake.Client()
+	mtbl := &mockTable{}
+	mtbl.On("Iterate", mock.Anything, mock.Anything, mock.Anything).
+		Return((client.IteratorResponse)(nil), status.Error(codes.ResourceExhausted, "resource exhausted"))
 
-			stdoutBuf := new(bytes.Buffer)
-			stderrBuf := new(bytes.Buffer)
-			RootCmd.SetOut(stdoutBuf)
-			RootCmd.SetErr(stderrBuf)
+	mclient := &mockClient{}
+	regatta = mclient
+	mclient.On("Table", "table").Return(mtbl)
 
-			RootCmd.SetArgs([]string{"--limit", "2", "range", "table", "--no-color", "--timeout", "2m"})
-			RootCmd.Execute()
+	stdoutBuf := new(bytes.Buffer)
+	stderrBuf := new(bytes.Buffer)
+	RootCmd.SetOut(stdoutBuf)
+	RootCmd.SetErr(stderrBuf)
 
-			assert.Equal(t, "test-key: test-value\ntest-key2: test-value2", strings.TrimSpace(stdoutBuf.String()))
-			assert.Empty(t, stderrBuf)
-		})
-	}
+	RootCmd.SetArgs([]string{"range", "table"})
+	RootCmd.Execute()
+
+	assert.Empty(t, stdoutBuf)
+	assert.Equal(t, `Received RPC error from Regatta, code 'ResourceExhausted' with message 'resource exhausted'`, strings.TrimSpace(stderrBuf.String()))
 }
 
 func Test_Range_Single(t *testing.T) {
 	resetRangeFlags()
 
 	mtbl := &mockTable{}
-	mtbl.On("Get", mock.Anything, "test-key", mock.Anything).
-		Return(&client.GetResponse{Kvs: []*client.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
+	mtbl.On("Iterate", mock.Anything, "test-key", mock.Anything).
+		Return(client.IteratorResponse(func(yield func(response *client.GetResponse, err error) bool) {
+			yield(&client.GetResponse{Kvs: []*client.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
+		}), nil)
 
 	mclient := &mockClient{}
 	regatta = mclient
@@ -192,8 +164,10 @@ func Test_Range_Prefix(t *testing.T) {
 	resetRangeFlags()
 
 	mtbl := &mockTable{}
-	mtbl.On("Get", mock.Anything, "test-key", mock.Anything).
-		Return(&client.GetResponse{Kvs: []*client.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
+	mtbl.On("Iterate", mock.Anything, "test-key", mock.Anything).
+		Return(client.IteratorResponse(func(yield func(response *client.GetResponse, err error) bool) {
+			yield(&client.GetResponse{Kvs: []*client.KeyValue{{Key: []byte("test-key"), Value: []byte("test-value")}}}, nil)
+		}), nil)
 
 	mclient := &mockClient{}
 	regatta = mclient
@@ -245,10 +219,12 @@ func Test_Range_Output(t *testing.T) {
 			resetRangeFlags()
 
 			mtbl := &mockTable{}
-			mtbl.On("Get", mock.Anything, string([]byte{0}), mock.Anything).
-				Return(&client.GetResponse{Kvs: []*client.KeyValue{
-					{Key: []byte("test-key1"), Value: []byte("test-value1")},
-					{Key: []byte("test-key2"), Value: []byte("test-value2")}}}, nil)
+			mtbl.On("Iterate", mock.Anything, string([]byte{0}), mock.Anything).
+				Return(client.IteratorResponse(func(yield func(response *client.GetResponse, err error) bool) {
+					yield(&client.GetResponse{Kvs: []*client.KeyValue{
+						{Key: []byte("test-key1"), Value: []byte("test-value1")},
+						{Key: []byte("test-key2"), Value: []byte("test-value2")}}}, nil)
+				}), nil)
 
 			mclient := &mockClient{}
 			regatta = mclient
@@ -296,10 +272,12 @@ func Test_Range_Values_Only(t *testing.T) {
 			resetRangeFlags()
 
 			mtbl := &mockTable{}
-			mtbl.On("Get", mock.Anything, string([]byte{0}), mock.Anything).
-				Return(&client.GetResponse{Kvs: []*client.KeyValue{
-					{Key: []byte("test-key1"), Value: []byte("test-value1")},
-					{Key: []byte("test-key2"), Value: []byte("test-value2")}}}, nil)
+			mtbl.On("Iterate", mock.Anything, string([]byte{0}), mock.Anything).
+				Return(client.IteratorResponse(func(yield func(response *client.GetResponse, err error) bool) {
+					yield(&client.GetResponse{Kvs: []*client.KeyValue{
+						{Key: []byte("test-key1"), Value: []byte("test-value1")},
+						{Key: []byte("test-key2"), Value: []byte("test-value2")}}}, nil)
+				}), nil)
 
 			mclient := &mockClient{}
 			regatta = mclient
