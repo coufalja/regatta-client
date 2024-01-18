@@ -25,10 +25,10 @@ func Test_Delete(t *testing.T) {
 	RootCmd.SetOut(stdoutBuf)
 	RootCmd.SetErr(stderrBuf)
 
-	RootCmd.SetArgs([]string{"delete", "table", "key"})
+	RootCmd.SetArgs([]string{"delete", "table", "key", "--no-color"})
 	RootCmd.Execute()
 
-	assert.Empty(t, stdoutBuf)
+	assert.Equal(t, `1`, strings.TrimSpace(stdoutBuf.String()))
 	assert.Empty(t, stderrBuf)
 	mclient.AssertExpectations(t)
 }
