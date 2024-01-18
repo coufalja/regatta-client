@@ -57,9 +57,7 @@ var RangeCmd = cobra.Command{
 		key, opts := keyAndOptsForRange(args)
 
 		var resps []*client.GetResponse
-		var err error
 		bufferAll := rangeOutput == jsonFormat
-		var total int64
 		iterator, err := regatta.Table(args[0]).Iterate(ctx, key, opts...)
 		if err != nil {
 			handleRegattaError(cmd, err)
@@ -71,7 +69,6 @@ var RangeCmd = cobra.Command{
 				handleRegattaError(cmd, err)
 				return false
 			}
-			total += resp.Count
 			if bufferAll {
 				// collect all responses and print when we have everything
 				resps = append(resps, resp)
