@@ -31,7 +31,7 @@ brews:
 - repository:
     owner: tantalor93
     name: homebrew-regatta-client
-  folder: Formula
+  directory: Formula
   homepage: https://github.com/Tantalor93/regatta-client
   install: |-
     bin.install "regatta-client"
