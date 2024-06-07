@@ -25,7 +25,7 @@ var VersionCmd = cobra.Command{
 		}
 		ctx, cancel := context.WithTimeout(cmd.Context(), timeout)
 		defer cancel()
-		resp, err := regatta.Status(ctx, endpointOption)
+		resp, err := regatta.Status(ctx, endpoint)
 		if err != nil {
 			printServerVersion(cmd, unknownVersion, color.FgRed)
 			cmd.PrintErrln(err)

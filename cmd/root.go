@@ -27,7 +27,7 @@ var RootCmd = cobra.Command{
 	Short: "Client for Regatta store",
 	Long: "Command-line tool wrapping API calls to Regatta (https://engineering.jamf.com/regatta/).\n" +
 		"Simplifies querying for data in Regatta store and other operations.",
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+	PersistentPreRunE: func(_ *cobra.Command, _ []string) error {
 		color.NoColor = noColor
 		return nil
 	},
@@ -36,19 +36,19 @@ var RootCmd = cobra.Command{
 }
 
 var (
-	endpointOption string
-	insecureOption bool
-	certOption     string
-	timeout        time.Duration
-	dialTimeout    time.Duration
-	noColor        bool
+	endpoint    string
+	insecure    bool
+	cert        string
+	timeout     time.Duration
+	dialTimeout time.Duration
+	noColor     bool
 )
 
 func init() {
 	RootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "disable color output")
-	RootCmd.PersistentFlags().StringVar(&endpointOption, "endpoint", "localhost:8443", "Regatta API endpoint")
-	RootCmd.PersistentFlags().BoolVar(&insecureOption, "insecure", false, "allow insecure connection, controls whether certificates are validated")
-	RootCmd.PersistentFlags().StringVar(&certOption, "cert", "", "Regatta CA cert")
+	RootCmd.PersistentFlags().StringVar(&endpoint, "endpoint", "localhost:8443", "Regatta API endpoint")
+	RootCmd.PersistentFlags().BoolVar(&insecure, "insecure", false, "allow insecure connection, controls whether certificates are validated")
+	RootCmd.PersistentFlags().StringVar(&cert, "cert", "", "Regatta CA cert")
 	RootCmd.PersistentFlags().DurationVar(&timeout, "timeout", 10*time.Second, "timeout for the Regatta operation")
 	RootCmd.PersistentFlags().DurationVar(&dialTimeout, "dial-timeout", 2*time.Second, "timeout for establishing the connection to the Regatta")
 
