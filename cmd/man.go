@@ -11,7 +11,7 @@ var ManCmd = cobra.Command{
 	Short:   "Generates man pages",
 	Example: "regatta-client man .",
 	Args:    cobra.MatchAll(cobra.ExactArgs(1)),
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		return doc.GenManTree(&RootCmd, nil, args[0])
 	},
 }

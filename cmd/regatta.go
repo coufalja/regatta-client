@@ -13,11 +13,11 @@ func connect(_ *cobra.Command, _ []string) error {
 	// Allow for mocking in tests.
 	if regatta == nil {
 		cl, err := client.New(
-			client.WithEndpoints(endpointOption),
+			client.WithEndpoints(endpoint),
 			client.WithBlock(),
 			client.WithReturnConnectionError(),
 			client.WithDialTimeout(dialTimeout),
-			client.WithSecureConfig(&client.SecureConfig{Cacert: certOption, InsecureSkipVerify: insecureOption}),
+			client.WithSecureConfig(&client.SecureConfig{Cacert: cert, InsecureSkipVerify: insecure}),
 		)
 		if err != nil {
 			return fmt.Errorf("unable to establish connection to the Regatta: %w", err)

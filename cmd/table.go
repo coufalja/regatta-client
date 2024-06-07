@@ -15,11 +15,11 @@ var TableCmd = cobra.Command{
 	Long:    "Print available tables using Status API (https://engineering.jamf.com/regatta/api/#status).",
 	Example: "regatta-client table",
 	PreRunE: connect,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, _ []string) {
 		ctx, cancel := context.WithTimeout(cmd.Context(), timeout)
 		defer cancel()
 
-		resp, err := regatta.Status(ctx, endpointOption)
+		resp, err := regatta.Status(ctx, endpoint)
 		if err != nil {
 			handleRegattaError(cmd, err)
 			return

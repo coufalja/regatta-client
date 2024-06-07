@@ -20,7 +20,7 @@ var PutCmd = cobra.Command{
 	Long:    "Put data into Regatta store using Put query as defined in API (https://engineering.jamf.com/regatta/api/#put).",
 	Example: "regatta-client put table key value",
 	Args:    cobra.ExactArgs(3),
-	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	ValidArgsFunction: func(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 		var comps []string
 		if len(args) == 0 {
 			comps = cobra.AppendActiveHelp(comps, "You must specify a Regatta table name")

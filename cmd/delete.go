@@ -22,7 +22,7 @@ var DeleteCmd = cobra.Command{
 		"regatta-client delete table 'prefix*'\n" +
 		"regatta-client delete table '*'",
 	Args: cobra.ExactArgs(2),
-	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	ValidArgsFunction: func(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 		var comps []string
 		if len(args) == 0 {
 			comps = cobra.AppendActiveHelp(comps, "You must specify a Regatta table name")
