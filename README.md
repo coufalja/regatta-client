@@ -109,6 +109,14 @@ this example retrieves all records with keys prefixed with `example` in the `exa
 regatta-client range example-table 'example*'
 ```
 
+### Get all records in provided range
+this example retrieves all records in provided lexicographic range `[key, range_end)`, where range_end is exclusive. 
+`range_end` must be lexicographically greater than `key`
+
+```
+regatta-client range example-table 1 3 
+```
+
 ### Delete record by key in a table
 this example deletes the record with the key `example-key` in the `example-table` table
 

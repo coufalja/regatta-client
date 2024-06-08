@@ -186,6 +186,33 @@ func Test_Range_Prefix(t *testing.T) {
 	mclient.AssertExpectations(t)
 }
 
+func Test_Range_end(t *testing.T) {
+	resetRangeFlags()
+
+	mtbl := &mockTable{}
+	mtbl.On("Iterate", mock.Anything, "test-key1", mock.Anything).
+		Return(client.IteratorResponse(func(yield func(response *client.GetResponse, err error) bool) {
+			yield(&client.GetResponse{Kvs: []*client.KeyValue{{Key: []byte("test-key1"), Value: []byte("test-value1")}}, More: true, Count: 1}, nil)
+			yield(&client.GetResponse{Kvs: []*client.KeyValue{{Key: []byte("test-key2"), Value: []byte("test-value2")}}, Count: 1}, nil)
+		}), nil)
+
+	mclient := &mockClient{}
+	regatta = mclient
+	mclient.On("Table", "table").Return(mtbl)
+
+	stdoutBuf := new(bytes.Buffer)
+	stderrBuf := new(bytes.Buffer)
+	RootCmd.SetOut(stdoutBuf)
+	RootCmd.SetErr(stderrBuf)
+
+	RootCmd.SetArgs([]string{"range", "table", "test-key1", "test-key3", "--no-color"})
+	RootCmd.Execute()
+
+	assert.Equal(t, "test-key1: test-value1\ntest-key2: test-value2", strings.TrimSpace(stdoutBuf.String()))
+	assert.Empty(t, stderrBuf)
+	mclient.AssertExpectations(t)
+}
+
 func Test_Range_Output(t *testing.T) {
 	tests := []struct {
 		name       string
